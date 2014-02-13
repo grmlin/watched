@@ -90,7 +90,19 @@ var win = window,
 		hasMutationObserver = NativeMutationObserver !== null,
 		hasPropertyChangeEvent = 'onpropertychange' in document.createElement('div');
 
-var nodeListToArray = function (nodeList) {
+var ready = function(cb) {
+			if ( doc.readyState === "complete" ) {
+				// Handle it asynchronously to allow scripts the opportunity to delay ready
+				setTimeout(cb, 1);
+			} else {
+				var completed = function(){
+					document.removeEventListener(DOM_EVENT_DOM_CONTENT_LOADED, completed, false );
+					cb();
+				};
+				doc.addEventListener( DOM_EVENT_DOM_CONTENT_LOADED, completed, false );
+			}
+		},
+		nodeListToArray = function (nodeList) {
 			return Array.prototype.slice.call(nodeList)
 		},
 		arrayContains = function (element, list) {
@@ -98,28 +110,6 @@ var nodeListToArray = function (nodeList) {
 		},
 		arrayClone = function (arr) {
 			return arr.slice(0);
-		},
-		throttle = function (fn, threshhold, scope) {
-			threshhold || (threshhold = 250);
-			var last,
-					deferTimer;
-			return function () {
-				var context = scope || this;
-
-				var now = +new Date,
-						args = arguments;
-				if (last && now < last + threshhold) {
-					// hold on to it
-					clearTimeout(deferTimer);
-					deferTimer = setTimeout(function () {
-						last = now;
-						fn.apply(context, args);
-					}, threshhold);
-				} else {
-					last = now;
-					fn.apply(context, args);
-				}
-			};
 		},
 		debounce = function (a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}};
 
@@ -195,7 +185,7 @@ var MutationObserverFactory = {
 		if (hasMutationObserver) {
 			Observer = NativeObserver;
 			console.log("native");
-		} else if (hasPropertyChangeEvent) {
+		} else if (false && hasPropertyChangeEvent) {
 			Observer = PropertyChangeObserver;
 			console.log("IE");
 		} else {
@@ -207,7 +197,8 @@ var MutationObserverFactory = {
 };
 
 var DomObserver = (function () {
-	var mutationObserver = MutationObserverFactory.createObserver(),
+	var isDomReady = false,
+			mutationObserver = MutationObserverFactory.createObserver(),
 			getElements = function (selector) {
 				var nodeList = querySelectorAll(selector);
 				return nodeListToArray(nodeList);
@@ -218,7 +209,7 @@ var DomObserver = (function () {
 				});
 			};
 
-	doc.addEventListener(DOM_EVENT_DOM_CONTENT_LOADED, mutationObserver.initialize.bind(mutationObserver));
+	ready(mutationObserver.initialize.bind(mutationObserver));
 
 	var DomObserver = function (selector) {
 		smokesignals.convert(this);
@@ -227,6 +218,7 @@ var DomObserver = (function () {
 		this._currentElements = [];
 
 		mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, this._onMutate.bind(this));
+		ready(this._onMutate.bind(this));
 	};
 
 	DomObserver.prototype._onMutate = function () {

@@ -23,20 +23,22 @@ describe('DomObserver', function () {
 	};
 
 	it('uses a selector to provide a nodelist', function (done) {
+		this.timeout(5000);
+
 		var CLASSNAME = 'DomObserver-1';
 
 		var observer = new DomObserver('.' + CLASSNAME);
 		observer.on(changed.event.ELEMENTS_ADDED, function (addedElements, currentElements) {
 			try {
-				expect(observer.elements).to.have.length(1);
+				expect(addedElements).to.have.length(1);
 				done();
 			} catch (e) {
 				done(e);
 			}
 		});
+
 		expect(observer.elements).to.be.an('array');
 		expect(observer.elements).to.have.length(0);
-
 
 		createEl(CLASSNAME);
 
