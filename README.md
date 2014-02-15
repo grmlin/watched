@@ -5,10 +5,14 @@ Live, event driven NodeList collections
 
 ```javascript
 // get some nodelists
-var foos    = watched(document).querySelectorAll('.foo');
-var bars    = watched(document).querySelector('.bar');
-var bazs    = watched(document).getElementsByClassName('.baz');
-var links   = watched(document).getElementsByTagName('a');
+
+// quick
+var foos  = watched('.foo'); 
+// or more specific
+var foos2 = watched(document).querySelectorAll('.foo'); // same as watched('.foo')
+var bars  = watched(document).querySelector('.bar');
+var bazs  = watched(document).getElementsByClassName('.baz');
+var links = watched(document).getElementsByTagName('a');
 
 // need the length
 var linkcount = links.length;
@@ -52,8 +56,26 @@ In either case only on mutation observer will be created for the scripts lifespa
 ## API
 
 ### watched
+The globally available namespace. Can be used to either get a `LiveNodeList` directly or a decorated dom element to create lists with different queries by yourself.
 
-#### watched(element) : DomElement
+#### watched(selector) : [LiveNodeList](#livenodelist)
+
+Shorthand to create a [`LiveNodeList`](#livenodelist) using `document` as the parent element and [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist).
+
+```javascript
+var  el = watched('.foo');
+```
+
+##### selector
+Type: `string`
+
+The selector you would also use in [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist)
+
+
+##### returns
+Type: [`LiveNodeList`](#livenodelist)
+
+#### watched(element) : [DomElement](#domelement)
 
 Creates the `DomElement` decorator we need.
 
@@ -62,17 +84,17 @@ var  el = watched(document);
 ```
 
 ##### element
-Type: `element`
+Type: `HTMLElement`
 
 The dom element you want to wrap.
 
 
 ##### returns
-Type: `DomElement`
+Type: [`DomElement`](#domelement)
 
 ### DomElement
 
-Class decorating native dom elements so it works with the internal `LiveNodeList`
+Class decorating native dom elements so it uses the internal `LiveNodeList`
 
 #### DomElement#querySelectorAll(selector) : LiveNodeList
 
