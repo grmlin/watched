@@ -58,7 +58,7 @@ Type: `LiveNodeList`
 
 A list of dom elements, always up to date
 
-- live list, you might already know it using `getElementsBy(Tag|Class)Name`
+- live list, similar to the list returned by `getElementsBy(Tag|Class)Name`
 -	dispatches event, if the list changed!
 
 #### LiveNodeList#added(callback)
