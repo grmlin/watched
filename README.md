@@ -32,6 +32,12 @@ Anyway, an interval based fallback is included, so older browsers will profit, t
 
 **The dom mutation listener is debounced, massive changes to the dom will happen in batches, not individually.**
 
+## Important notes
+
+- **Always use the ` added` and `removed` events!** The node lists are live and bound to changes in the dom, but **not** synchronously. 
+- **The magic might get expensive!** Better not use hundreds of live nodelists, they will all be updated and re-evaluated in the background when the dom changes!
+
+
 ## API
 
 ### watched
