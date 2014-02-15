@@ -5,32 +5,38 @@ describe('watched namespace', function () {
 
 	it('creates a DomElement instance', function() {
 		expect(watched(document)).to.be.a(DomElement);
+		expect(function(){
+			watched({});
+		}).to.throwError();
 	});
 });
 
 describe('DomElement', function(){
 	var element = new DomElement(document);
 
-	it('supports dom queries', function(){
+	it('gives me LiveNodeLists', function(){
 		//var liveNodeList = element.querySelectorAll('.dom-element-test');
 		expect(element.querySelectorAll).to.be.a('function');
 		expect(element.querySelector).to.be.a('function');
 		expect(element.getElementsByTagName).to.be.a('function');
 		expect(element.getElementsByClassName).to.be.a('function');
 
-		var listQuerySelectorAll,
-				listQuerySelector,
-				listElementsByTagName,
-				listElementsByClassName;
-		
-		expect(element.querySelectorAll('.dom-element-test')).to.be.a(LiveNodeList);
-		expect(element.querySelector('.dom-element-test')).to.be.a(LiveNodeList);
-		//expect(liveNodeList._query).to.be.a(DomQuery);
+		var listQuerySelectorAll = element.querySelectorAll('.dom-element-test'),
+				listWatchQuery = watched('.dom-element-test'),
+				listQuerySelector = element.querySelector('.dom-element-test'),
+				listElementsByTagName = element.getElementsByTagName('script'),
+				listElementsByClassName = element.getElementsByClassName('.dom-element-test');
+
+		expect(listQuerySelectorAll).to.be.a(LiveNodeList);
+		expect(listWatchQuery).to.be.a(LiveNodeList);
+		expect(listQuerySelector).to.be.a(LiveNodeList);
+		expect(listElementsByTagName).to.be.a(LiveNodeList);
+		expect(listElementsByClassName).to.be.a(LiveNodeList);
+
+		expect(listQuerySelectorAll.pause).to.be.a('function');
+		expect(listQuerySelectorAll.resume).to.be.a('function');
 	});
 
-	it('is created by calling watched', function(){
-
-	});
 });
 
 /*
