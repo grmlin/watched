@@ -21,7 +21,9 @@ nodeList.removed(function(removedElements){
 
 Creates the `DomElement` wrapper we need.
 
-	var  el = watched(document);
+```javascript
+var  el = watched(document);
+```
 
 ##### element
 Type: `element`
@@ -40,7 +42,9 @@ Class wrapping a native dom element so it works with the internal `LiveNodeList`
 
 Get a live node list of dom elements similar to the native [`NodeList`](http://devdocs.io/dom/nodelist).
 
+```javascript
 	var nodeList = watched(document).querySelectorAll('.foo');
+```
 
 ##### selector
 Type: `string`
@@ -61,9 +65,11 @@ A list of dom elements, always up to date
 
 Adds a callback to the node list. The called will be called, when new elements are added to the dom
 
+```javascript
 	nodeList.added(function(newElements){
 		console.log(newElements);
 	});
+```
 
 ##### callback(newElements:Array)
 Type: `function`
