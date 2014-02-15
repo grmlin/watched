@@ -26,7 +26,7 @@
 		mocha.setup('bdd');
 	</script>
 
-	<script src="lib/changed.js"></script>
+	<script src="lib/watched.js"></script>
 
 </head>
 <body data-gremlin-config='{"debug":true}'>
@@ -42,7 +42,7 @@
 </script>
 -->
 
-<script type="text/javascript" src="spec/changed.js"></script>
+<script type="text/javascript" src="spec/watched.js"></script>
 
 <!-- run mocha -->
 <script type="text/javascript" charset="utf-8">
@@ -56,24 +56,24 @@
 </script>
 
 <script>
-	var observer = new DomObserver('.foo');
+	var nodeList = watched(document).querySelectorAll('.foo');
 
-	observer.on(changed.event.ELEMENTS_ADDED, function (addedElements, currentElements) {
+	nodeList.added(function (addedElements, currentElements) {
 		console.timeEnd('addFooN');
 
-		console.log("Elements added to the dom")
-		console.log('We have ' + addedElements.length + ' new elements in the dom. Totally there are ' + currentElements.length);
-		console.dir(addedElements);
+		//console.log("Elements added to the dom")
+		console.log('Found ' + addedElements.length + ' new element(s) in this list. Total length: ' + nodeList.length);
+		console.log(nodeList);
 		addedElements.forEach(function(el){
 			el.style.color = 'limegreen';
 		});
 	});
-	observer.on(changed.event.ELEMENTS_REMOVED, function (removedElements, currentElements) {
+	nodeList.removed(function (removedElements, currentElements) {
 		console.timeEnd('removeFoo');
 
-		console.log("Elements removed from the dom")
-		console.log('We have ' + removedElements.length + ' less elements in the dom. Totally there are ' + currentElements.length);
-		console.dir(removedElements);
+		//console.log("Elements removed from the dom")
+		console.log(removedElements.length + ' element(s) were removed from this list. Total length: ' + nodeList.length);
+		console.log(nodeList);
 	});
 
 	var fooId = 0;
@@ -92,7 +92,7 @@
 
 	var addFooWithTimeout = function(delay){
 		setTimeout(function () {
-			console.log('------- adding with timeout -----------', delay)
+			//console.log('------- adding with timeout -----------', delay)
 			addFoo();
 		}, delay);
 	};
