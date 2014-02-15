@@ -63,7 +63,7 @@ The globally available namespace. Can be used to either get a `LiveNodeList` dir
 Shorthand to create a [`LiveNodeList`](#livenodelist) using `document` as the parent element and [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist).
 
 ```javascript
-var  el = watched('.foo');
+var  foos = watched('.foo');
 ```
 
 ##### selector
