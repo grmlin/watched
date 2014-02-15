@@ -4,22 +4,29 @@ changed.js
 Live, event driven NodeList collections 
 
 ```javascript
+// get some nodelists
 var foos    = watched(document).querySelectorAll('.foo');
 var bars    = watched(document).querySelector('.bar');
 var bazs    = watched(document).getElementsByClassName('.baz');
 var links   = watched(document).getElementsByTagName('a');
 
+// need the length
 var linkcount = links.length;
+
+// access elements directly 
 var aLink = links[0];
 
+// or iterate
 foos.forEach(function(element){
   console.log(element);
 });
 
-
+// finally, stay up to date, when elements are added
 nodeList.added(function(addedElements){
 	console.log(addedElements);
 });
+
+// or removed
 nodeList.removed(function(removedElements){
 	console.log(removedElements);
 });
@@ -30,12 +37,16 @@ Behind the scenes, **changed.js** uses the all new [`MutationObserver`](http://d
 
 An interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
 
-**The dom mutation listener is debounced, massive changes to the dom will happen in batches, not individually.**
+In either case only on mutation observer will be created for the scripts lifespan. All `LiveNodeList` instances will listens to this one observer. 
+
 
 ## Important notes
 
-- **Always use the ` added` and `removed` events!** The node lists are live and bound to changes in the dom, but **not** synchronously. 
-- **The magic might get expensive!** Better not use hundreds of live nodelists, they will all be updated and re-evaluated in the background when the dom changes!
+- **The dom mutation listener is debounced!** That's why massive changes to the dom will happen in batches, not individually, and take some time. (20ms at the moment)
+
+- **Always use the ` added` and `removed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
+
+- **The magic might get expensive!** Better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background when the dom changes!
 
 
 ## API
