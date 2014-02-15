@@ -3,15 +3,16 @@ changed.js
 
 Dom watchdog in plain javascript
 
-	var nodeList = watched(document).querySelectorAll('.foo');
+```javascript
+var nodeList = watched(document).querySelectorAll('.foo');
 
-	nodeList.added(function(addedElements){
-		console.log('Found ' + addedElements.length + ' new element(s) in this list. Total length: ' + nodeList.length);
-	});
-	nodeList.removed(function(removedElements){
-		console.log(removedElements.length + ' element(s) were removed from this list. Total length: ' + nodeList.length);
-	});
-
+nodeList.added(function(addedElements){
+	console.log('Found ' + addedElements.length + ' new element(s) in this list. Total length: ' + nodeList.length);
+});
+nodeList.removed(function(removedElements){
+	console.log(removedElements.length + ' element(s) were removed from this list. Total length: ' + nodeList.length);
+});
+```
 ## API
 
 ### watched
