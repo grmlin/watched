@@ -17,8 +17,9 @@ gulp.task('connect', function(){
 gulp.task('scriptsTest', function () {
 	gulp.src('lib/watched.js')
 			.pipe(include())
-			.pipe(gulp.dest('./dist'))
 			.pipe(gulp.dest('./test/lib'))
+			.pipe(wrap({ src: 'umdWrapper.tpl'}))
+			.pipe(gulp.dest('./dist'))
 });
 
 gulp.task('uglify', function () {

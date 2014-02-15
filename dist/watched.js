@@ -1,4 +1,19 @@
-var smokesignals;
+(function (root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define([], function () {
+			// Also create a global in case some scripts
+			// that are loaded still are looking for
+			// a global even when an AMD loader is in use.
+			return (root.watched = factory());
+		});
+	} else {
+		// Browser globals
+		root.watched = factory();
+	}
+}(this, function () {
+	"use strict";
+	var smokesignals;
 // -----------------------------
 // external sources
 // -----------------------------
@@ -85,7 +100,7 @@ smokesignals = {
 
 var TRUE = true,
 		FALSE = false,
-		MUTATION_DEBOUNCE_DELAY = 50,// bubble dom changes in batches.
+		MUTATION_DEBOUNCE_DELAY = 20,// bubble dom changes in batches.
 		INTERVAL_OBSERVER_RESCAN_INTERVAL = 500,
 		INDEX_OF_FAIL = -1,
 		CUSTOM_EVENT_ON_MUTATION = 1,
@@ -267,6 +282,8 @@ Object.defineProperties(DomQuery.prototype, {
 
 
 var DomElement = function(element) {
+
+
 	this._el = element;
 };
 
@@ -400,3 +417,5 @@ var LiveNodeList = (function () {
 var watched = function(element) {
 	return new DomElement(element);
 };
+	return watched;
+}));
