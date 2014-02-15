@@ -19,7 +19,7 @@ nodeList.removed(function(removedElements){
 
 #### watched(element) : DomElement
 
-Creates the `DomElement` wrapper we need.
+Creates the `DomElement` decorator we need.
 
 ```javascript
 var  el = watched(document);
@@ -36,7 +36,7 @@ Type: `DomElement`
 
 ### DomElement
 
-Class wrapping a native dom element so it works with the internal `LiveNodeList`
+Class decorating native dom elements so it works with the internal `LiveNodeList`
 
 #### DomElement#querySelectorAll(selector) : LiveNodeList
 
@@ -56,14 +56,18 @@ Type: `LiveNodeList`
 
 ### LiveNodeList
 
-A list of dom elements, always up to date
+A list of dom elements, always up to date. It's "array-like", similar to jquery objects or native node lists.
 
 - live list, similar to the list returned by `getElementsBy(Tag|Class)Name`
--	dispatches event, if the list changed!
+- dispatches event, if the list changed!
+
+#### LiveNodeList#length
+
+Current length of the nodelist
 
 #### LiveNodeList#added(callback)
 
-Adds a callback to the node list. The called will be called, when new elements are added to the dom
+Adds a callback to the node list. The callback will be called, when new elements are added to the dom
 
 ```javascript
 nodeList.added(function(newElements){
@@ -74,7 +78,38 @@ nodeList.added(function(newElements){
 ##### callback(newElements:Array)
 Type: `function`
 
-Callback will be called with two arguments: an array `newElements` containing the newly found elements, and a second array `allElements` containing all elements currently found
+Callback will be called with one argument: an array `newElements` containing the newly found dom elements
 
 #### LiveNodeList#removed(callback)
+
+Adds a callback to the node list. The called will be called, when new elements are added to the dom
+
+```javascript
+nodeList.removed(function(removedElements){
+	console.log(removedElements);
+});
+```
+
+##### callback(removedElements:Array)
+Type: `function`
+
+Callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
+
+#### LiveNodeList#forEach()
+
+see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+
+```javascript
+nodeList.forEach(function(element){
+	element.style.color = "green";
+});
+```
+
 #### LiveNodeList#destroy()
+
+Destroys the nodelist and removes all dom mutation listeners
+
+```javascript
+nodeList.destroy();
+```
+

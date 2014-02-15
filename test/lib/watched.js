@@ -291,8 +291,8 @@ var LiveNodeList = (function () {
 		this._query = elementQuery;
 		this._updateArray(this._query.current());
 		//event binding
-		var onMutate = this._onMutate.bind(this);
-		mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, onMutate);
+		this._onMutateHandler = this._onMutate.bind(this);
+		mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 		//ready(onMutate);
 	};
 
@@ -348,6 +348,11 @@ var LiveNodeList = (function () {
 		forEach: {
 			value: function () {
 				Array.prototype.forEach.apply(this, arguments);
+			}
+		},
+		destroy: {
+			value: function(){
+				mutationObserver.off(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 			}
 		},
 		length: {
