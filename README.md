@@ -28,7 +28,7 @@ nodeList.removed(function(removedElements){
 
 Behind the scenes, **changed.js** uses the all new [`MutationObserver`](http://devdocs.io/dom/mutationobserver) to detect changes in the dom. [Browser support](http://caniuse.com/#feat=mutationobserver) is quite good these days.
 
-Anyway, an interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
+An interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
 
 **The dom mutation listener is debounced, massive changes to the dom will happen in batches, not individually.**
 

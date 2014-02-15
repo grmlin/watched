@@ -12,10 +12,20 @@ describe('DomElement', function(){
 	var element = new DomElement(document);
 
 	it('supports dom queries', function(){
-		var liveNodeList = element.querySelectorAll('.dom-element-test');
+		//var liveNodeList = element.querySelectorAll('.dom-element-test');
 		expect(element.querySelectorAll).to.be.a('function');
-		expect(liveNodeList).to.be.a(LiveNodeList);
-		expect(liveNodeList._query).to.be.a(DomQuery);
+		expect(element.querySelector).to.be.a('function');
+		expect(element.getElementsByTagName).to.be.a('function');
+		expect(element.getElementsByClassName).to.be.a('function');
+
+		var listQuerySelectorAll,
+				listQuerySelector,
+				listElementsByTagName,
+				listElementsByClassName;
+		
+		expect(element.querySelectorAll('.dom-element-test')).to.be.a(LiveNodeList);
+		expect(element.querySelector('.dom-element-test')).to.be.a(LiveNodeList);
+		//expect(liveNodeList._query).to.be.a(DomQuery);
 	});
 
 	it('is created by calling watched', function(){

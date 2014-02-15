@@ -93,7 +93,10 @@ var TRUE = true,
 		CUSTOM_EVENT_ON_ELEMENTS_REMOVED = 3,
 		DOM_EVENT_DOM_CONTENT_LOADED = 'DOMContentLoaded',
 		QUERY_QUERY_SELECTOR_ALL = 'querySelectorAll',
-		AVAILABLE_QUERIES = [QUERY_QUERY_SELECTOR_ALL];
+		QUERY_QUERY_SELECTOR = 'querySelector',
+		QUERY_GET_ELEMENTS_BY_TAG_NAME = 'getElementsByTagName',
+		QUERY_GET_ELEMENTS_BY_CLASS_NAME = 'getElementsByClassName',
+		AVAILABLE_QUERIES = [QUERY_QUERY_SELECTOR_ALL, QUERY_QUERY_SELECTOR, QUERY_GET_ELEMENTS_BY_TAG_NAME, QUERY_GET_ELEMENTS_BY_CLASS_NAME];
 
 var doc = document,
 		NativeMutationObserver = MutationObserver || WebKitMutationObserver || MozMutationObserver || null,
@@ -217,20 +220,28 @@ var QueryStrategyFactory = (function () {
 
 	// element.querySelectorAll
 	strategies[QUERY_QUERY_SELECTOR_ALL] = function (element, selector) {
-		var nodeList = element.querySelectorAll(selector);
-		return nodeListToArray(nodeList);
+		return function () {
+			var nodeList = element.querySelectorAll(selector);
+			return nodeListToArray(nodeList);
+		}
+	};
+
+	// element.querySelector
+	strategies[QUERY_QUERY_SELECTOR] = function (element, selector) {
+		return function () {
+			var node = element.querySelectorAll(selector);
+			return node === null ? [] : [node];
+		}
 	};
 
 	return {
-		create: function(strategyType, element, selector) {
-			return function(){
-				//console.time("query");
-				//console.log("executing query: ", strategyType + "("+selector+")");
-				//var result = strategies[strategyType](element, selector);
-				//console.timeEnd("query");
-				//return result;
-				return strategies[strategyType](element, selector);
-			};
+		create: function (strategyType, element, selector) {
+			//console.time("query");
+			//console.log("executing query: ", strategyType + "("+selector+")");
+			//var result = strategies[strategyType](element, selector);
+			//console.timeEnd("query");
+			//return result;
+			return strategies[strategyType](element, selector);
 		}
 	}
 }());
