@@ -100,6 +100,9 @@ smokesignals = {
 
 var TRUE = true,
 		FALSE = false,
+		FUNCTION = 'function',
+		STRING = 'string',
+		//UNDEFINED = undefined,
 		MUTATION_DEBOUNCE_DELAY = 20,// bubble dom changes in batches.
 		INTERVAL_OBSERVER_RESCAN_INTERVAL = 500,
 		INDEX_OF_FAIL = -1,
@@ -128,6 +131,11 @@ var ready = function(cb) {
 				};
 				doc.addEventListener( DOM_EVENT_DOM_CONTENT_LOADED, completed, FALSE );
 			}
+		},
+		isInvalidDomElement = function(el) {
+			return AVAILABLE_QUERIES.some(function(query) {
+					return typeof el[query] !== FUNCTION;
+			});
 		},
 		nodeListToArray = function (nodeList) {
 			return Array.prototype.slice.call(nodeList)
@@ -236,7 +244,7 @@ var QueryStrategyFactory = (function () {
 	// element.querySelectorAll
 	strategies[QUERY_QUERY_SELECTOR_ALL] = function (element, selector) {
 		return function () {
-			var nodeList = element.querySelectorAll(selector);
+			var nodeList = element[QUERY_QUERY_SELECTOR_ALL](selector);
 			return nodeListToArray(nodeList);
 		}
 	};
@@ -244,8 +252,26 @@ var QueryStrategyFactory = (function () {
 	// element.querySelector
 	strategies[QUERY_QUERY_SELECTOR] = function (element, selector) {
 		return function () {
-			var node = element.querySelectorAll(selector);
+			var node = element[QUERY_QUERY_SELECTOR](selector);
 			return node === null ? [] : [node];
+		}
+	};
+
+	// element.getElementsByTagName
+	strategies[QUERY_GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
+		// a live list, has to be called once, only
+		var nodeList = element[QUERY_GET_ELEMENTS_BY_TAG_NAME](tagName);
+		return function () {
+			return nodeListToArray(nodeList);
+		}
+	};
+
+	// element.getElementsByTagName
+	strategies[QUERY_GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
+		// a live list, has to be called once, only
+		var nodeList = element[QUERY_GET_ELEMENTS_BY_CLASS_NAME](className);
+		return function () {
+			return nodeListToArray(nodeList);
 		}
 	};
 
@@ -282,8 +308,9 @@ Object.defineProperties(DomQuery.prototype, {
 
 
 var DomElement = function(element) {
-
-
+	if (isInvalidDomElement(element)) {
+		throw new TypeError('changed.js: the element to watch has to be a HTMLElement!');
+	}
 	this._el = element;
 };
 
@@ -415,6 +442,9 @@ var LiveNodeList = (function () {
 
 
 var watched = function(element) {
+	if (typeof element === STRING) {
+		return new DomElement(doc).querySelectorAll(element);
+	}
 	return new DomElement(element);
 };
 	return watched;
