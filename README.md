@@ -1,16 +1,27 @@
 changed.js
 ==========
 
-Live, event driven NodeList collections for more than `getElementsBy(Tag|Class)Name`
+Live, event driven NodeList collections 
 
 ```javascript
-var nodeList = watched(document).querySelectorAll('.foo');
+var foos    = watched(document).querySelectorAll('.foo');
+var bars    = watched(document).querySelector('.bar');
+var bazs    = watched(document).getElementsByClassName('.baz');
+var links   = watched(document).getElementsByTagName('a');
+
+var linkcount = links.length;
+var aLink = links[0];
+
+foos.forEach(function(element){
+  console.log(element);
+});
+
 
 nodeList.added(function(addedElements){
-	console.log('Found ' + addedElements.length + ' new element(s) in this list. Total length: ' + nodeList.length);
+	console.log(addedElements);
 });
 nodeList.removed(function(removedElements){
-	console.log(removedElements.length + ' element(s) were removed from this list. Total length: ' + nodeList.length);
+	console.log(removedElements);
 });
 ```
 ## How?
