@@ -5,6 +5,7 @@ var gzip = require("gulp-gzip");
 var connect = require('gulp-connect');
 var include = require('gulp-include');
 var wrap = require("gulp-wrap");
+var version = require('./package.json').version;
 
 gulp.task('connect', function(){
 	connect.server({
@@ -17,20 +18,22 @@ gulp.task('connect', function(){
 gulp.task('scriptsTest', function () {
 	gulp.src('lib/watched.js')
 			.pipe(include())
-			.pipe(gulp.dest('./test/lib'))
-			.pipe(wrap({ src: 'umdWrapper.tpl'}))
-			.pipe(gulp.dest('./dist'))
+			.pipe(gulp.dest('./test/lib'));
+			//.pipe(wrap({ src: 'umdWrapper.tpl'}))
+			//.pipe(gulp.dest('./dist'))
 });
 
 gulp.task('uglify', function () {
 	gulp.src('lib/watched.js')
 			.pipe(include())
-			.pipe(gulp.dest('./dist'))
 			.pipe(wrap({ src: 'umdWrapper.tpl'}))
+			.pipe(wrap({ src: 'licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
+			.pipe(gulp.dest('./dist'))
 			.pipe(uglify({
 				outSourceMap: false,
 				mangle: true
 			}))
+			.pipe(wrap({ src: 'licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
 			.pipe(rename({
 				suffix: ".min"
 			}))

@@ -1,0 +1,1 @@
+/*!watched.js <%= data.version %> - https://github.com/grmlin/watched - Licensed under MIT license*/<%= data.contents %>
