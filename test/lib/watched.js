@@ -85,8 +85,8 @@ smokesignals = {
 
 var TRUE = true,
 		FALSE = false,
-		MUTATION_DEBOUNCE_DELAY = 10,// bubble dom changes in batches.
-		TIMEOUT_CLOCK_RESCAN_INTERVAL = 500,
+		MUTATION_DEBOUNCE_DELAY = 50,// bubble dom changes in batches.
+		INTERVAL_OBSERVER_RESCAN_INTERVAL = 500,
 		INDEX_OF_FAIL = -1,
 		CUSTOM_EVENT_ON_MUTATION = 1,
 		CUSTOM_EVENT_ON_ELEMENTS_ADDED = 2,
@@ -142,7 +142,7 @@ var IntervalObserver = (function () {
 				});
 			};
 
-	var IntervalObserver = function (selector) {
+	var IntervalObserver = function () {
 		smokesignals.convert(this);
 		this._currentElements = getAllAsArray();
 	};
@@ -152,7 +152,7 @@ var IntervalObserver = (function () {
 			value: function () {
 				var _this = this,
 						start = function () {
-							setTimeout(tick, TIMEOUT_CLOCK_RESCAN_INTERVAL)
+							setTimeout(tick, INTERVAL_OBSERVER_RESCAN_INTERVAL);
 						},
 						tick = function () {
 							_this._checkDom();
@@ -225,7 +225,7 @@ var QueryStrategyFactory = (function () {
 		create: function(strategyType, element, selector) {
 			return function(){
 				//console.time("query");
-				console.log("executing query: ", strategyType + "("+selector+")");
+				//console.log("executing query: ", strategyType + "("+selector+")");
 				//var result = strategies[strategyType](element, selector);
 				//console.timeEnd("query");
 				//return result;
@@ -272,6 +272,7 @@ AVAILABLE_QUERIES.forEach(function(queryType){
 
 var LiveNodeList = (function () {
 
+	// The one and only instance of a mutation observer, initialized on document ready
 	var mutationObserver = (function () {
 				return new (hasMutationObserver ? NativeObserver : IntervalObserver)();
 			}()),
@@ -287,13 +288,13 @@ var LiveNodeList = (function () {
 	// LiveNodeList is an array like object, not inheriting from array
 	var LiveNodeList = function (elementQuery) {
 		smokesignals.convert(this);
+
+		this._isActive = FALSE;
 		this._length = 0;
 		this._query = elementQuery;
-		this._updateArray(this._query.current());
-		//event binding
 		this._onMutateHandler = this._onMutate.bind(this);
-		mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
-		//ready(onMutate);
+
+		this.resume();
 	};
 
 	Object.defineProperties(LiveNodeList.prototype, {
@@ -318,14 +319,19 @@ var LiveNodeList = (function () {
 		},
 		_updateArray: {
 			value: function (currentElements) {
-				this.forEach(function (el, index) {
-					delete this[index];
-				}, this);
-
+				this._deleteArray();
 				this._length = currentElements.length;
 				currentElements.forEach(function (el, index) {
 					this[index] = el;
 				}, this);
+			}
+		},
+		_deleteArray: {
+			value: function () {
+				this.forEach(function (el, index) {
+					delete this[index];
+				}, this);
+				this.length = 0;
 			}
 		},
 		_bubble: {
@@ -350,9 +356,19 @@ var LiveNodeList = (function () {
 				Array.prototype.forEach.apply(this, arguments);
 			}
 		},
-		destroy: {
-			value: function(){
+		pause: {
+			value: function () {
+				this._isActive = FALSE;
 				mutationObserver.off(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
+			}
+		},
+		resume: {
+			value: function () {
+				if (!this._isActive) {
+					this._isActive = TRUE;
+					this._updateArray(this._query.current());
+					mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
+				}
 			}
 		},
 		length: {

@@ -1,7 +1,7 @@
 changed.js
 ==========
 
-Dom watchdog in plain javascript
+Live, event driven NodeList collections for more than `getElementsBy(Tag|Class)Name`
 
 ```javascript
 var nodeList = watched(document).querySelectorAll('.foo');
@@ -13,6 +13,14 @@ nodeList.removed(function(removedElements){
 	console.log(removedElements.length + ' element(s) were removed from this list. Total length: ' + nodeList.length);
 });
 ```
+## How?
+
+Behind the scenes, **changed.js** uses the all new [`MutationObserver`](http://devdocs.io/dom/mutationobserver) to detect changes in the dom. [Browser support](http://caniuse.com/#feat=mutationobserver) is quite good these days.
+
+Anyway, an interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
+
+**The dom mutation listener is debounced, massive changes to the dom will happen in batches, not individually.**
+
 ## API
 
 ### watched
@@ -105,11 +113,18 @@ nodeList.forEach(function(element){
 });
 ```
 
-#### LiveNodeList#destroy()
+#### LiveNodeList#pause()
 
-Destroys the nodelist and removes all dom mutation listeners
+Freezes the nodelist in it's current form and removes the dom mutation listener
 
 ```javascript
-nodeList.destroy();
+nodeList.pause();
 ```
 
+#### LiveNodeList#resume()
+
+Resumes all dom mutation listeners and will update the nodelist, if it changes
+
+```javascript
+nodeList.resume();
+```
