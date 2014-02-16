@@ -1,4 +1,4 @@
-/*!watched.js 0.4.0 - https://github.com/grmlin/watched - Licensed under MIT license*/
+/*!watched.js 0.1.0 - https://github.com/grmlin/watched - Licensed under MIT license*/
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
@@ -103,39 +103,29 @@ var TRUE = true,
 		FALSE = false,
 		FUNCTION = 'function',
 		STRING = 'string',
-		//UNDEFINED = undefined,
+//UNDEFINED = undefined,
 		MUTATION_DEBOUNCE_DELAY = 20,// bubble dom changes in batches.
 		INTERVAL_OBSERVER_RESCAN_INTERVAL = 500,
 		INDEX_OF_FAIL = -1,
 		CUSTOM_EVENT_ON_MUTATION = 1,
 		CUSTOM_EVENT_ON_ELEMENTS_ADDED = 2,
 		CUSTOM_EVENT_ON_ELEMENTS_REMOVED = 3,
+		CUSTOM_EVENT_ON_ELEMENTS_CHANGED = 4,
 		DOM_EVENT_DOM_CONTENT_LOADED = 'DOMContentLoaded',
 		QUERY_QUERY_SELECTOR_ALL = 'querySelectorAll',
 		QUERY_QUERY_SELECTOR = 'querySelector',
 		QUERY_GET_ELEMENTS_BY_TAG_NAME = 'getElementsByTagName',
 		QUERY_GET_ELEMENTS_BY_CLASS_NAME = 'getElementsByClassName',
-		AVAILABLE_QUERIES = [QUERY_QUERY_SELECTOR_ALL, QUERY_QUERY_SELECTOR, QUERY_GET_ELEMENTS_BY_TAG_NAME, QUERY_GET_ELEMENTS_BY_CLASS_NAME];
+		AVAILABLE_QUERIES = [QUERY_QUERY_SELECTOR_ALL, QUERY_QUERY_SELECTOR, QUERY_GET_ELEMENTS_BY_TAG_NAME,
+		                     QUERY_GET_ELEMENTS_BY_CLASS_NAME];
 
 var doc = document,
-		NativeMutationObserver = MutationObserver || WebKitMutationObserver || MozMutationObserver || null,
-		hasMutationObserver = NativeMutationObserver !== null;
+		hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
+		NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver: null;
 
-var ready = function(cb) {
-			if ( doc.readyState === "complete" ) {
-				// Handle it asynchronously to allow scripts the opportunity to delay ready
-				setTimeout(cb, 1);
-			} else {
-				var completed = function(){
-					doc.removeEventListener(DOM_EVENT_DOM_CONTENT_LOADED, completed, FALSE );
-					cb();
-				};
-				doc.addEventListener( DOM_EVENT_DOM_CONTENT_LOADED, completed, FALSE );
-			}
-		},
-		isInvalidDomElement = function(el) {
-			return AVAILABLE_QUERIES.some(function(query) {
-					return typeof el[query] !== FUNCTION;
+var isInvalidDomElement = function (el) {
+			return AVAILABLE_QUERIES.some(function (query) {
+				return typeof el[query] !== FUNCTION;
 			});
 		},
 		nodeListToArray = function (nodeList) {
@@ -147,7 +137,13 @@ var ready = function(cb) {
 		arrayClone = function (arr) {
 			return arr.slice(0);
 		},
-		debounce = function (a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}};
+		debounce = function (a, b, c) {
+			var d;
+			return function () {
+				var e = this, f = arguments;
+				clearTimeout(d), d = setTimeout(function () {d = null, c || a.apply(e, f)}, b), c && !d && a.apply(e, f)
+			}
+		};
 
 
 
@@ -172,10 +168,11 @@ var IntervalObserver = (function () {
 	var IntervalObserver = function () {
 		smokesignals.convert(this);
 		this._currentElements = getAllAsArray();
+		this._initialize();
 	};
 
 	Object.defineProperties(IntervalObserver.prototype, {
-		initialize: {
+		_initialize: {
 			value: function () {
 				var _this = this,
 						start = function () {
@@ -215,17 +212,15 @@ var NativeObserver = (function () {
 
 	var NativeObserver = function () {
 		smokesignals.convert(this);
+		this._observer = new NativeMutationObserver(this._onMutation.bind(this));
+		this._observer.observe(doc, opts);
 	};
 
 	Object.defineProperties(NativeObserver.prototype, {
-		initialize: {
-			value: function () {
-				this._observer = new NativeMutationObserver(this._onMutation.bind(this));
-				this._observer.observe(doc.body, opts);
-			}
-		},
 		_onMutation: {
 			value: debounce(function (mutations) {
+				console.log("---------- MUTATION OBSERVER MUTATED ----------");
+
 				if (mutations.some(isElementMutation, this)) {
 					this.emit(CUSTOM_EVENT_ON_MUTATION);
 				}
@@ -328,18 +323,13 @@ AVAILABLE_QUERIES.forEach(function(queryType){
 
 var LiveNodeList = (function () {
 
-	// The one and only instance of a mutation observer, initialized on document ready
-	var mutationObserver = (function () {
-				return new (hasMutationObserver ? NativeObserver : IntervalObserver)();
-			}()),
+	// The one and only local instance of a mutation observer
+	var mutationObserver = new (hasMutationObserver ? NativeObserver : IntervalObserver)(),
 			diff = function (target, other) {
 				return target.filter(function (element) {
 					return !arrayContains(element, other);
 				});
 			};
-
-	// initialize the mutation observer when the dom is complete
-	ready(mutationObserver.initialize.bind(mutationObserver));
 
 	// LiveNodeList is an array like object, not inheriting from array
 	var LiveNodeList = function (elementQuery) {
@@ -349,7 +339,6 @@ var LiveNodeList = (function () {
 		this._length = 0;
 		this._query = elementQuery;
 		this._onMutateHandler = this._onMutate.bind(this);
-
 		this.resume();
 	};
 
@@ -358,7 +347,7 @@ var LiveNodeList = (function () {
 			value: function () {
 				var oldElements = this._query.old(),
 						currentElements = this._query.current(),
-						addedElements, removedElements;
+						addedElements, removedElements, wasAdded, wasRemoved;
 
 				// 1. find all the added elements
 				addedElements = diff(currentElements, oldElements);
@@ -369,8 +358,19 @@ var LiveNodeList = (function () {
 				// 3. update the nodelist array
 				this._updateArray(currentElements);
 
-				this._bubble(CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
-				this._bubble(CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
+				wasAdded = addedElements.length > 0;
+				wasRemoved = removedElements.length > 0;
+
+				if (wasAdded || wasRemoved) {
+					this._bubble(CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
+				}
+				if (wasAdded) {
+					this._bubble(CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
+				}
+				if (wasRemoved) {
+					this._bubble(CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
+				}
+
 			}
 		},
 		_updateArray: {
@@ -392,9 +392,12 @@ var LiveNodeList = (function () {
 		},
 		_bubble: {
 			value: function (eventType, elementList) {
-				if (elementList.length > 0) {
-					this.emit(eventType, elementList);
-				}
+				this.emit(eventType, elementList);
+			}
+		},
+		changed: {
+			value: function(callback) {
+				this.on(CUSTOM_EVENT_ON_ELEMENTS_CHANGED, callback);
 			}
 		},
 		added: {
