@@ -26,14 +26,14 @@ gulp.task('scriptsTest', function () {
 gulp.task('uglify', function () {
 	gulp.src('lib/watched.js')
 			.pipe(include())
-			.pipe(wrap({ src: 'umdWrapper.tpl'}))
-			.pipe(wrap({ src: 'licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
+			.pipe(wrap({ src: 'build/umdWrapper.tpl'}))
+			.pipe(wrap({ src: 'build/licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
 			.pipe(gulp.dest('./dist'))
 			.pipe(uglify({
 				outSourceMap: false,
 				mangle: true
 			}))
-			.pipe(wrap({ src: 'licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
+			.pipe(wrap({ src: 'build/licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
 			.pipe(rename({
 				suffix: ".min"
 			}))
