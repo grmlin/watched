@@ -386,7 +386,7 @@ var LiveNodeList = (function () {
 		_deleteArray: {
 			value: function () {
 				Array.prototype.splice.call(this, 0);
-				this.length = 0;
+				this._length = 0;
 			}
 		},
 		_bubble: {
@@ -417,6 +417,9 @@ var LiveNodeList = (function () {
 		length: {
 			get: function () {
 				return this._length;
+			},
+			set: function(value) {
+				// we'll do nothing in here, will be called while using array methods on the nodelist
 			}
 		},
 		splice: {
