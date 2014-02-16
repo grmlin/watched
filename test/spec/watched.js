@@ -45,6 +45,8 @@ describe('DomElement', function () {
 });
 
 describe('LiveNodeList', function () {
+	this.timeout(5000);
+
 	var CSS_CLASS = "livenodelist-test";
 	var element = new DomElement(document);
 	var list = element.querySelectorAll('.' + CSS_CLASS);
@@ -149,6 +151,7 @@ describe('LiveNodeList', function () {
 	});
 
 	it('detects changes in batches', function (done) {
+
 		var CSS_CLASS_2 = "detects-changes-in-batches";
 		var list = element.querySelectorAll('.' + CSS_CLASS_2);
 		var times = 0;
