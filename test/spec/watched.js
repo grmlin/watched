@@ -42,6 +42,124 @@ describe('DomElement', function () {
 		expect(element.getElementsByClassName('.dom-element-test')).to.be.a(LiveNodeList);
 	});
 
+	it('supports querySelectorAll', function(done){
+		var classname = "supports-querySelectorAll",
+				wrapper = document.createElement('div'),
+				inside = document.createElement('div'),
+				outside = document.createElement('div');
+
+		inside.className = classname;
+		outside.className = classname;
+
+		document.body.appendChild(wrapper);
+
+		var list = watched(wrapper).querySelectorAll("." + classname);
+		list.on('added', function(addedElements){
+			try {
+				expect(list.length).to.equal(1);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.not.contain(outside);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+	});
+
+	it('supports querySelector', function(done){
+		var classname = "supports-querySelector",
+				wrapper = document.createElement('div'),
+				inside = document.createElement('div'),
+				outside = document.createElement('div');
+
+		inside.className = classname;
+		outside.className = classname;
+
+		document.body.appendChild(wrapper);
+
+		var list = watched(wrapper).querySelector("." + classname);
+		list.on('added', function(addedElements){
+			try {
+				expect(list.length).to.equal(1);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.not.contain(outside);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+	});
+
+	it('supports getElementsByTagName', function(done){
+		var classname = "supports-getElementsByTagName",
+				wrapper = document.createElement('div'),
+				inside = document.createElement('span'),
+				inside2 = document.createElement('span'),
+				insideInvalid = document.createElement('div'),
+				outside = document.createElement('span');
+
+		document.body.appendChild(wrapper);
+
+		var list = watched(wrapper).getElementsByTagName("span");
+		list.on('added', function(addedElements){
+			try {
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+				expect(addedElements).to.not.contain(outside);
+				expect(addedElements).to.not.contain(insideInvalid);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+		wrapper.appendChild(insideInvalid);
+	});
+
+	it('supports getElementsByClassName', function(done){
+		var classname = "supports-getElementsByClassName",
+				wrapper = document.createElement('div'),
+				inside = document.createElement('div'),
+				inside2 = document.createElement('div'),
+				insideInvalid = document.createElement('div'),
+				outside = document.createElement('div');
+
+		inside.className = classname;
+		inside2.className = classname;
+		insideInvalid.className = classname + "-NOT";
+		outside.className = classname;
+
+		document.body.appendChild(wrapper);
+
+		var list = watched(wrapper).getElementsByClassName(classname);
+		list.on('added', function(addedElements){
+			try {
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+				expect(addedElements).to.not.contain(outside);
+				expect(addedElements).to.not.contain(insideInvalid);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+		wrapper.appendChild(insideInvalid);
+	});
 });
 
 describe('LiveNodeList', function () {
@@ -164,8 +282,6 @@ describe('LiveNodeList', function () {
 		el2.className = CSS_CLASS_2;
 		el3.className = CSS_CLASS_2;
 
-
-
 		el2.className = CSS_CLASS_2;
 
 		list.on('added', function (newElements) {
@@ -202,7 +318,7 @@ describe('LiveNodeList', function () {
 			}
 		});
 
-		list.on('changed', function(currentElements) {
+		list.on('changed', function (currentElements) {
 			try {
 				if (times === 0) {
 					expect(list.length).to.equal(3);
@@ -228,4 +344,49 @@ describe('LiveNodeList', function () {
 
 	});
 
+	it('can pause the live nodelist', function (done) {
+		var CSS_CLASS_2 = "can-pause-the-live-nodelist";
+		var list = element.querySelectorAll('.' + CSS_CLASS_2);
+		var times = 0;
+
+		var el1 = document.createElement('div'),
+				el2 = document.createElement('div'),
+				el3 = document.createElement('div');
+
+		el1.className = CSS_CLASS_2;
+		el2.className = CSS_CLASS_2;
+		el3.className = CSS_CLASS_2;
+
+		list.on('added', function (addeElements) {
+			try {
+				if (times === 0) {
+					expect(list.length).to.equal(1);
+					expect(list[0]).to.equal(el1);
+
+					// pause
+					times++;
+					list.pause();
+					document.body.appendChild(el2);
+					setTimeout(function(){
+						list.resume();
+						document.body.appendChild(el3);
+					}, 1000);
+				} else if (times === 1) {
+					expect(list.length).to.equal(3);
+					expect(list).to.contain(el1);
+					expect(list).to.contain(el2);
+					expect(list).to.contain(el3);
+					times++;
+					done();
+				} else if (times === 2) {
+					throw new Error("Didn't pause");
+				}
+
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(el1);
+	});
 });
