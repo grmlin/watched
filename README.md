@@ -48,7 +48,7 @@ In either case only on mutation observer will be created for the scripts lifespa
 
 - **The dom mutation listener is debounced!** That's why massive changes to the dom will happen in batches, not individually, and take some time. (20ms at the moment)
 
-- **Always use the ` added` and `removed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
+- **Always use the ` added`, `removed` and `changed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
 
 - **The magic might get expensive!** Better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background when the dom changes!
 
