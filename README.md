@@ -123,6 +123,21 @@ A list of dom elements, always up to date. It's "array-like", similar to jquery 
 
 Current length of the nodelist
 
+#### LiveNodeList#changed(callback)
+
+Adds a callback to the node list. The callback will be called, when new elements are added to or removed from the dom
+
+```javascript
+nodeList.added(function(currentElements){
+	console.log(currentElements);
+});
+```
+
+##### callback(currentElements)
+Type: `function`
+
+Callback will be called with one argument: an array `currentElements` containing all elements currently in the list
+
 #### LiveNodeList#added(callback)
 
 Adds a callback to the node list. The callback will be called, when new elements are added to the dom
