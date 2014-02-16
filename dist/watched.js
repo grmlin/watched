@@ -108,10 +108,9 @@ var TRUE = true,
 		INTERVAL_OBSERVER_RESCAN_INTERVAL = 500,
 		INDEX_OF_FAIL = -1,
 		CUSTOM_EVENT_ON_MUTATION = 1,
-		CUSTOM_EVENT_ON_ELEMENTS_ADDED = 2,
-		CUSTOM_EVENT_ON_ELEMENTS_REMOVED = 3,
-		CUSTOM_EVENT_ON_ELEMENTS_CHANGED = 4,
-		DOM_EVENT_DOM_CONTENT_LOADED = 'DOMContentLoaded',
+		CUSTOM_EVENT_ON_ELEMENTS_ADDED = 'added',
+		CUSTOM_EVENT_ON_ELEMENTS_REMOVED = 'removed',
+		CUSTOM_EVENT_ON_ELEMENTS_CHANGED = 'changed',
 		QUERY_QUERY_SELECTOR_ALL = 'querySelectorAll',
 		QUERY_QUERY_SELECTOR = 'querySelector',
 		QUERY_GET_ELEMENTS_BY_TAG_NAME = 'getElementsByTagName',
@@ -219,8 +218,6 @@ var NativeObserver = (function () {
 	Object.defineProperties(NativeObserver.prototype, {
 		_onMutation: {
 			value: debounce(function (mutations) {
-				console.log("---------- MUTATION OBSERVER MUTATED ----------");
-
 				if (mutations.some(isElementMutation, this)) {
 					this.emit(CUSTOM_EVENT_ON_MUTATION);
 				}
@@ -342,6 +339,10 @@ var LiveNodeList = (function () {
 		this.resume();
 	};
 
+	//	LiveNodeList.ADDED   = CUSTOM_EVENT_ON_ELEMENTS_ADDED;
+	//	LiveNodeList.REMOVED = CUSTOM_EVENT_ON_ELEMENTS_REMOVED;
+	//	LiveNodeList.CHANGED = CUSTOM_EVENT_ON_ELEMENTS_CHANGED;
+
 	Object.defineProperties(LiveNodeList.prototype, {
 		_onMutate: {
 			value: function () {
@@ -384,30 +385,13 @@ var LiveNodeList = (function () {
 		},
 		_deleteArray: {
 			value: function () {
-				this.forEach(function (el, index) {
-					delete this[index];
-				}, this);
+				Array.prototype.splice.call(this, 0);
 				this.length = 0;
 			}
 		},
 		_bubble: {
 			value: function (eventType, elementList) {
 				this.emit(eventType, elementList);
-			}
-		},
-		changed: {
-			value: function(callback) {
-				this.on(CUSTOM_EVENT_ON_ELEMENTS_CHANGED, callback);
-			}
-		},
-		added: {
-			value: function (callback) {
-				this.on(CUSTOM_EVENT_ON_ELEMENTS_ADDED, callback);
-			}
-		},
-		removed: {
-			value: function (callback) {
-				this.on(CUSTOM_EVENT_ON_ELEMENTS_REMOVED, callback);
 			}
 		},
 		forEach: {
