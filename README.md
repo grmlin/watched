@@ -1,7 +1,7 @@
 watched.js
 ==========
 
-Live, event driven NodeList collections 
+Live, event driven dom element collections
 
 ```javascript
 // give me nodelists
