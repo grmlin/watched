@@ -59,7 +59,7 @@ In either case only a single mutation observer will be created for the scripts l
 
 - **Always use the ` added`, `removed` and `changed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
 
-- **The fallback is slower than native!** It uses a intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. 
+- **The fallback is slower than native!** It uses an intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. 
 
 - **The magic might become expensive!** You better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background, when the dom changes!
 
