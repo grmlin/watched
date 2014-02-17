@@ -247,3 +247,8 @@ nodeList.on('removed', function(removedElements){
 
 The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
 
+
+## Thanks
+
+- [DECAF](http://decaf.de/)
+- [smokesignals.js](https://bitbucket.org/bentomas/smokesignals.js/) - used as event emitter
