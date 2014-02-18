@@ -21,7 +21,6 @@
         }, delay);
       },
       addAlert = function (type, text) {
-//					<div class="alert alert-success col-md-6">Added 4 elements to the list</div>
         var alert = document.createElement('div');
         alert.className = 'alert alert-' + type + ' fade in col-md-6';
         alert.textContent = text;
