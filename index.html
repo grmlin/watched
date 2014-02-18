@@ -1,42 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Watched : watched.js - Live, event driven dom element collections" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Watched by grmlin</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Watched</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1>Watched</h1>
+        <p>watched.js - Live, event driven dom element collections</p>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/grmlin/watched">View on GitHub</a>
+        <p class="view"><a href="https://github.com/grmlin/watched">View the Project on GitHub <small>grmlin/watched</small></a></p>
 
-          <h1 id="project_title">Watched</h1>
-          <h2 id="project_tagline">watched.js - Live, event driven dom element collections</h2>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/grmlin/watched/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/grmlin/watched/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+        <ul>
+          <li><a href="https://github.com/grmlin/watched/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/grmlin/watched/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/grmlin/watched">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
         <h1>
 <a name="watchedjs" class="anchor" href="#watchedjs"><span class="octicon octicon-link"></span></a>watched.js</h1>
 
-<p>Live, event driven NodeList collections </p>
+<p>Live, event driven dom element collections </p>
 
-<div class="highlight highlight-javascript"><pre><span class="c1">// give me nodelists</span>
+<ul>
+<li><a href="http://grmlin.github.io/watched/">Website</a></li>
+<li><a href="http://grmlin.github.io/watched/demo.html">Demo</a></li>
+</ul><div class="highlight highlight-javascript"><pre><span class="c1">// give me nodelists</span>
 
 <span class="c1">// quick</span>
 <span class="kd">var</span> <span class="nx">foos</span>  <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span> 
@@ -93,7 +93,7 @@
 <ul>
 <li><p><strong>The dom mutation listener is debounced!</strong> That's why massive changes to the dom will happen in batches, not individually, and take some time. (20ms at the moment)</p></li>
 <li><p><strong>Always use the <code>added</code>, <code>removed</code> and <code>changed</code> events!</strong> The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). </p></li>
-<li><p><strong>The fallback is slower than native!</strong> It uses a intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. </p></li>
+<li><p><strong>The fallback is slower than native!</strong> It uses an intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. </p></li>
 <li><p><strong>The magic might become expensive!</strong> You better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background, when the dom changes!</p></li>
 </ul><h2>
 <a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
@@ -303,18 +303,22 @@
 </pre></div>
 
 <p>The event listeners callback will be called with one argument: an array <code>removedElements</code> containing the dom elements removed from the list (removed from the dom)</p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Watched maintained by <a href="https://github.com/grmlin">grmlin</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+<h2>
+<a name="thanks" class="anchor" href="#thanks"><span class="octicon octicon-link"></span></a>Thanks</h2>
+
+<ul>
+<li><a href="http://decaf.de/">DECAF</a></li>
+<li>
+<a href="https://bitbucket.org/bentomas/smokesignals.js/">smokesignals.js</a> - used as event emitter</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/grmlin">grmlin</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-
+    <script src="javascripts/scale.fix.js"></script>
     
-
   </body>
 </html>
