@@ -1,0 +1,34 @@
+{
+  "name": "watched.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/grmlin/watched",
+  "authors": [
+    "Andreas Wehr <iam@grml.in>"
+  ],
+  "description": "Live, event driven NodeList collections",
+  "main": "/dist/watched.min.js",
+  "keywords": [
+    "dom",
+    "nodelist",
+    "event",
+    "browser"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.0",
+    "commit": "4962b5680917bb8cd03220f23407cc6ffe4c9234"
+  },
+  "_source": "git://github.com/grmlin/watched.git",
+  "_target": "~0.1.0",
+  "_originalSource": "watched.js",
+  "_direct": true
+}

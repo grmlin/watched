@@ -1,0 +1,23 @@
+{
+  "name": "changed.js",
+  "version": "0.1.0",
+  "author": {
+    "name": "Andreas Wehr"
+  },
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/grmlin/watched.git"
+	},
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "~3.5.2",
+    "gulp-uglify": "~0.2.1",
+    "gulp-rename": "~1.0.0",
+    "gulp-gzip": "0.0.5",
+    "gulp-connect": "~0.7.0",
+    "gulp-include": "~0.2.1",
+    "smokesignals": "0.0.7",
+    "gulp-wrap": "~0.3.0"
+  }
+}

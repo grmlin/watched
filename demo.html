@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title></title>
+
+	<link rel="stylesheet" href="bower_components/bootswatch/yeti/bootstrap.min.css"/>
+	<link rel="stylesheet" href="stylesheets/prism.css"/>
+
+	<style type="text/css">
+		#query-selector-all-wrapper .list-group-item {
+			color: #f04124;
+		}
+
+		#query-selector-all-wrapper .list-group-item:before {
+			content: "#" attr(data-index) " ";
+		}
+	</style>
+
+	<script src="bower_components/watched.js/dist/watched.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+
+	<div class="page-header">
+		<h1>watched.js
+			<small>Live, event driven dom element collections</small>
+		</h1>
+		<p class="lead">Demo</p>
+	</div>
+
+	<h3><code>querySelectorAll</code></h3>
+
+	<p>A live nodelist using <code>querySelectorAll</code>.</p>
+
+	<p>&nbsp;</p>
+
+	<p>&nbsp;</p>
+
+	<div class="row">
+		<div class="col-md-6">
+
+
+			<div class="well">
+				<form role="form" id="query-selector-all-add-form">
+					<!--<div class="form-group">
+						<span>Add</span>
+						<input type="number" class="form-control" id="query-selector-all-input" placeholder="Enter a number" value="1">
+						<span>items to the list</span>
+					</div>
+	-->
+					<legend>Add new Items</legend>
+					<div class="form-group">
+						<label for="query-selector-all-add-input-count">No of items</label>
+						<input type="number" class="form-control" id="query-selector-all-add-input-count" placeholder="Enter a number" value="1" min="1">
+					</div>
+					<div class="form-group">
+						<label for="query-selector-all-add-input-delay">Delay</label>
+						<input type="number" class="form-control" id="query-selector-all-add-input-delay" placeholder="Enter a number" value="20" min="0">
+						<span class="help-block"><small>Time waited before an individual list item will be added. Everything <=20ms
+							should add the items in batches.
+						</small></span>
+					</div>
+					<button type="submit" class="btn btn-default btn-block btn-xs">Add</button>
+				</form>
+			</div>
+
+		</div>
+		<div class="col-md-6">
+
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<!--<pre><code class="language-javascript">var wrapper = document.getElementById("query-selector-all-wrapper"),
+						nodelist = watched(wrapper).querySelectorAll('li.watched-item');</code></pre>-->
+					Fancy list
+				</div>
+				<div id="query-selector-all-wrapper" class="list-group">
+					<a class="list-group-item watched-item text-danger" href="#">lorem ipsum</a>
+					<a class="list-group-item watched-item" href="#">lorem ipsum</a>
+				</div>
+				<div class="panel-footer clearfix">
+					<span id="query-selector-all-count"></span> item(s)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="javascripts/prism.js"></script>
+<script src="javascripts/main.js"></script>
+</body>
+</html>
