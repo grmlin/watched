@@ -1,7 +1,11 @@
 watched.js
 ==========
 
-Live, event driven dom element collections
+Live, event driven dom element collections 
+
+- [Website](http://grmlin.github.io/watched/)
+- [Demo](http://grmlin.github.io/watched/demo.html)
+
 
 ```javascript
 // give me nodelists
