@@ -1,24 +1,19 @@
 /*!watched.js 0.1.0 - (c) 2014 Andreas Wehr - https://github.com/grmlin/watched - Licensed under MIT license*/(function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['b'], function (b) {
-			return (root.returnExportsGlobal = factory(b));
+		define([], function () {
+			return (root.watched = factory());
 		});
 	} else if (typeof exports === 'object') {
 		// Node. Does not work with strict CommonJS, but
 		// only CommonJS-like enviroments that support module.exports,
 		// like Node.
-		module.exports = factory(require('b'));
+		module.exports = factory();
 	} else {
 		// Browser globals
-		root.returnExportsGlobal = factory(root.b);
+		root.watched = factory();
 	}
-}(this, function (b) {
-	//use b in some fashion.
-
-	// Just return a value to define the module export.
-	// This example returns an object, but the module
-	// can return a function as the exported value.
+}(this, function () {
 	"use strict";
 	var smokesignals;
 // -----------------------------
