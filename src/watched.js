@@ -1,4 +1,4 @@
-var smokesignals;
+//var smokesignals;
 // -----------------------------
 // external sources
 // -----------------------------
@@ -19,9 +19,14 @@ var smokesignals;
 //= include ./DomElement.js
 //= include ./LiveNodeList.js
 
+
+var DomElement = require('./DomElement');
+
 var watched = function(element) {
-	if (typeof element === STRING) {
+	if (typeof element === 'string') {
 		return new DomElement(doc).querySelectorAll(element);
 	}
 	return new DomElement(element);
 };
+
+module.exports = watched;

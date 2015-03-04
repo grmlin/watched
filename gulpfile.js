@@ -1,11 +1,41 @@
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
 var rename = require("gulp-rename");
 var gzip = require("gulp-gzip");
 var connect = require('gulp-connect');
 var include = require('gulp-include');
 var wrap = require("gulp-wrap");
 var version = require('./package.json').version;
+
+var browserify = require('browserify');
+var transform = require('vinyl-transform');
+var sourcemaps = require('gulp-sourcemaps');
+
+var browserified = transform(function(filename) {
+    var b = browserify(filename, {
+			standalone: 'watched'
+		});
+    return b.bundle();
+});
+
+gulp.task('scriptsTest', function () {
+	gulp.src('src/**/__tests__/*.js')
+		.pipe(browserified)
+		.pipe(concat('spec.js'))
+		.pipe(gulp.dest('./test'));
+});
+
+gulp.task('javascript', function () {
+	// transform regular node stream to gulp (buffered vinyl) stream
+	return gulp.src('lib/watched.js')
+		.pipe(browserified)
+		.pipe(sourcemaps.init({loadMaps: true}))
+		// Add transformation tasks to the pipeline here.
+		.pipe(uglify())
+		.pipe(sourcemaps.write('./'))
+		.pipe(gulp.dest('./dist/'));
+});
 
 gulp.task('connect', function(){
 	connect.server({
@@ -15,13 +45,7 @@ gulp.task('connect', function(){
 	})();
 });
 
-gulp.task('scriptsTest', function () {
-	gulp.src('lib/watched.js')
-			.pipe(include())
-			.pipe(gulp.dest('./test/lib'));
-			//.pipe(wrap({ src: 'umdWrapper.tpl'}))
-			//.pipe(gulp.dest('./dist'))
-});
+
 
 gulp.task('uglify', function () {
 	gulp.src('lib/watched.js')
@@ -54,8 +78,7 @@ gulp.task("reload", function () {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(['lib/**/*'], ['scriptsTest', 'reload']);
-	gulp.watch(['test/spec/**/*.js'], ['reload']);
+	gulp.watch(['src/**/*'], ['scriptsTest', 'reload']);
 });
 
 gulp.task('default', ['connect', 'scriptsTest', 'watch']);
