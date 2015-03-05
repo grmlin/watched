@@ -1,32 +1,16 @@
-//var smokesignals;
-// -----------------------------
-// external sources
-// -----------------------------
-
-//= include ../node_modules/smokesignals/smokesignals.js
-
-// -----------------------------
-// internal sources
-// -----------------------------
-
-//= include ./var/globals.js
-
-//= include_tree ./observers
-
-//= include ./domQueries/QueryStrategyFactory.js
-//= include ./domQueries/DomQuery.js
-
-//= include ./DomElement.js
-//= include ./LiveNodeList.js
-
-
 var DomElement = require('./DomElement');
 
-var watched = function(element) {
-	if (typeof element === 'string') {
-		return new DomElement(doc).querySelectorAll(element);
+var watched = function (element) {
+	if (this instanceof watched) {
+		throw new Error('watched is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
-	return new DomElement(element);
+
+	// a string will be used as a querySelectorAll shortcut on the document element
+	if (typeof element === 'string') {
+		return DomElement(document).querySelectorAll(element);
+	} else {
+		return DomElement(element);
+	}
 };
 
 module.exports = watched;

@@ -54,7 +54,7 @@ Behind the scenes, **watched.js** uses the all new [`MutationObserver`](http://d
 
 An interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
 
-In either case only a single mutation observer will be created for the scripts lifespan. All `LiveNodeList` instances will listens to this one observer. 
+In either case only a single mutation observer will be created for the scripts lifespan. All `LiveNodeList` instances will listen to this one observer. 
 
 
 ## Important notes

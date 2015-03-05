@@ -7,16 +7,19 @@ var constants = {
 	CUSTOM_EVENT_ON_ELEMENTS_ADDED : 'added',
 	CUSTOM_EVENT_ON_ELEMENTS_REMOVED : 'removed',
 	CUSTOM_EVENT_ON_ELEMENTS_CHANGED : 'changed',
-	QUERY_QUERY_SELECTOR_ALL : 'querySelectorAll',
-	QUERY_QUERY_SELECTOR : 'querySelector',
-	QUERY_GET_ELEMENTS_BY_TAG_NAME : 'getElementsByTagName',
-	QUERY_GET_ELEMENTS_BY_CLASS_NAME : 'getElementsByClassName'
+	AVAILABLE_QUERIES: [],
+	queries: {
+		QUERY_SELECTOR_ALL : 'querySelectorAll',
+		QUERY_SELECTOR : 'querySelector',
+		GET_ELEMENTS_BY_TAG_NAME : 'getElementsByTagName',
+		GET_ELEMENTS_BY_CLASS_NAME : 'getElementsByClassName'
+	}
+
 };
 
-Object.defineProperty(constants, 'AVAILABLE_QUERIES', {
-	get: function(){
-		return [constants.QUERY_QUERY_SELECTOR_ALL, constants.QUERY_QUERY_SELECTOR, constants.QUERY_GET_ELEMENTS_BY_TAG_NAME, constants.QUERY_GET_ELEMENTS_BY_CLASS_NAME];
-	}
+//constants.queries
+Object.keys(constants.queries).forEach(function(index){
+	constants.AVAILABLE_QUERIES.push(constants.queries[index]);
 });
 
 module.exports = constants;

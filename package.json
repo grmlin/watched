@@ -9,7 +9,10 @@
     "type": "git",
     "url": "https://github.com/grmlin/watched.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "object-assign": "^2.0.0",
+    "smokesignals": "0.0.7"
+  },
   "devDependencies": {
     "browserify": "^9.0.3",
     "gulp": "^3.8.11",

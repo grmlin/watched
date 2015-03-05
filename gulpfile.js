@@ -12,18 +12,33 @@ var browserify = require('browserify');
 var transform = require('vinyl-transform');
 var sourcemaps = require('gulp-sourcemaps');
 
-var browserified = transform(function(filename) {
-    var b = browserify(filename, {
-			standalone: 'watched'
-		});
-    return b.bundle();
-});
+//var browserified = transform(function(filename) {
+//    var b = browserify(filename, {
+//			standalone: 'watched'
+//		});
+//    return b.bundle();
+//});
 
 gulp.task('scriptsTest', function () {
-	gulp.src('src/**/__tests__/*.js')
+
+	var browserified = transform(function(filename) {
+		var b = browserify(filename, {
+			standalone: 'watched',
+			debug: false
+		});
+		return b.bundle();
+	});
+
+	return gulp.src('src/**/__tests__/*.js')
 		.pipe(browserified)
+		//.pipe(sourcemaps.init({loadMaps: true}))
+		// Add transformation tasks to the pipeline here.
+		//.pipe(uglify())
+		//.pipe(sourcemaps.write())
 		.pipe(concat('spec.js'))
-		.pipe(gulp.dest('./test'));
+		//.pipe(sourcemaps.init({loadMaps: true}))
+		//.pipe(sourcemaps.write())
+		.pipe(gulp.dest('./test/specs'));
 });
 
 gulp.task('javascript', function () {
