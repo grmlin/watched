@@ -1,6 +1,6 @@
 {
   "name": "watched",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Live, event driven dom element collections ",
   "main": "src/watched.js",
   "keywords": [
