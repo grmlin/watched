@@ -1,16 +1,22 @@
 var helper = require('./util/helper'),
 	constants = require('./util/constants'),
-	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory');
+	LiveNodeList = require('./LiveNodeList'),
+	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory'),
+	DomQuery = require('./domQueries/DomQuery');
 
 
-var DomElement = {};
+var DomElement = {
+	__name__: 'DomElement'
+};
 
 constants.AVAILABLE_QUERIES.forEach(function (queryType) {
 		DomElement[queryType] = function (selector) {
 			// TODO tiny query factory, better do some error handling?
 			var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector),
-				query = new DomQuery(queryStrategy);
-			return new LiveNodeList(query);
+				query = Object.create(DomQuery);
+
+			query.init(queryStrategy);
+			return LiveNodeList(query);
 		};
 });
 

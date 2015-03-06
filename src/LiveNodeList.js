@@ -1,20 +1,25 @@
-var smokesignals = require('smokesignals'),
-	constants = require('./util/constants'),
-	helper = require('./util/helper'),
-	NativeObserver = function(){},
-	IntervalObserver = function(){};
+var smokesignals     = require('smokesignals'),
+		constants        = require('./util/constants'),
+		helper           = require('./util/helper'),
+		NativeObserver   = require('./observers/NativeObserver'),
+		IntervalObserver = function () {
+		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = new (helper.hasMutationObserver ? NativeObserver : IntervalObserver)(),
-	diff = function (target, other) {
-		return target.filter(function (element) {
-			return !helper.arrayContains(element, other);
-		});
-	};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
+		diff             = function (target, other) {
+			return target.filter(function (element) {
+				return !helper.arrayContains(other, element);
+			});
+		};
 
+mutationObserver.init();
 
-// LiveNodeList is an array like object, not inheriting from array
+// LiveNodeList is an array like object
 var LiveNodeList = {
+
+	__name__: 'LiveNodeList',
+
 	init: function (elementQuery) {
 		this._isActive = false;
 		this._length = 0;
@@ -22,10 +27,11 @@ var LiveNodeList = {
 		this._onMutateHandler = this._onMutate.bind(this);
 		this.resume();
 	},
+
 	_onMutate: function () {
-		var oldElements = this._query.old(),
-			currentElements = this._query.current(),
-			addedElements, removedElements, wasAdded, wasRemoved;
+		var oldElements     = this._query.old(),
+				currentElements = this._query.current(),
+				addedElements, removedElements, wasAdded, wasRemoved;
 
 		// 1. find all the added elements
 		addedElements = diff(currentElements, oldElements);
@@ -40,13 +46,13 @@ var LiveNodeList = {
 		wasRemoved = removedElements.length > 0;
 
 		if (wasAdded || wasRemoved) {
-			this._bubble(CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
+			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
 		if (wasAdded) {
-			this._bubble(CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
+			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
 		if (wasRemoved) {
-			this._bubble(CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
+			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
 
 	},
@@ -68,16 +74,16 @@ var LiveNodeList = {
 		Array.prototype.forEach.apply(this, arguments);
 	},
 	pause: function () {
-		this._isActive = FALSE;
-		mutationObserver.off(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
+		this._isActive = false;
+		mutationObserver.off(constants.CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 	},
 	resume: function () {
 		if (!this._isActive) {
-			this._isActive = TRUE;
+			this._isActive = true;
 			this._updateArray(this._query.current());
-			mutationObserver.on(CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
+			mutationObserver.on(constants.CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 		}
-	},
+	}
 };
 
 Object.defineProperty(LiveNodeList, 'length', {
@@ -92,7 +98,11 @@ Object.defineProperty(LiveNodeList, 'length', {
 smokesignals.convert(LiveNodeList);
 
 
-module.exports = function(elementQuery){
+module.exports = function (elementQuery) {
+	if (this instanceof module.exports) {
+		throw new Error('The LiveNodeList is a factory function, not a constructor. Don\'t use the new keyword with it');
+	}
+
 	var nodeList = Object.create(LiveNodeList);
 	nodeList.init(elementQuery);
 	return nodeList;

@@ -9,7 +9,7 @@ describe('DomElement', function () {
 		}).to.throwError();
 	});
 
-	it('wraps dom elements', function(){
+	it('wraps dom elements', function () {
 		//domEl.init(document);
 
 		expect(function () {
@@ -32,11 +32,11 @@ describe('DomElement', function () {
 		expect(DomElement(document).el).to.equal(document);
 	});
 
-	it('creates instances', function(){
+	it('creates instances', function () {
 		expect(DomElement(document)).to.not.equal(DomElement(document));
 	});
 
-	it('provides query selectors', function(){
+	it('provides query selectors', function () {
 		var el = DomElement(document);
 
 		expect(el.querySelectorAll).to.be.a('function');
@@ -45,6 +45,23 @@ describe('DomElement', function () {
 		expect(el.getElementsByClassName).to.be.a('function');
 
 	});
+
+	// ------------------
+
+	var element = DomElement(document);
+
+	it('returns LiveNodeLists', function () {
+		expect(element.querySelectorAll('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(element.querySelector('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(element.getElementsByTagName('script')).to.have.property('__name__', 'LiveNodeList');
+		expect(element.getElementsByClassName('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+	});
+
+
+
+
+
+
 
 
 });

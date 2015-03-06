@@ -1,52 +1,51 @@
-var IntervalObserver = (function () {
+var smokesignals = require('smokesignals'),
+		helper       = require('../util/helper'),
+		constants    = require('../util/constants');
 
-	var allElementsLive = doc.getElementsByTagName('*'),
-			getAllAsArray = function () {
-				return nodeListToArray(allElementsLive);
-			},
-			hasChanged = function (oldElements, newElements) {
-				if (oldElements.length !== newElements.length) {
-					return TRUE;
-				}
+var allElementsLive = document.getElementsByTagName('*'),
+		getAllAsArray   = function () {
+			return helper.nodeListToArray(allElementsLive);
+		},
+		hasChanged      = function (oldElements, newElements) {
+			if (oldElements.length !== newElements.length) {
+				return true;
+			}
 
-				// check if the arrays contain
-				return oldElements.some(function (element, index) {
-					return element !== newElements[index];
-				});
-			};
+			// check if the arrays contain
+			return oldElements.some(function (element, index) {
+				return element !== newElements[index];
+			});
+		};
 
-	var IntervalObserver = function () {
-		smokesignals.convert(this);
+
+var IntervalObserver = {
+	init: function () {
 		this._currentElements = getAllAsArray();
 		this._initialize();
-	};
+	},
+	_initialize: function () {
+		var _this = this,
+				start = function () {
+					setTimeout(tick, constants.INTERVAL_OBSERVER_RESCAN_INTERVAL);
+				},
+				tick  = function () {
+					_this._checkDom();
+					start();
+				};
 
-	Object.defineProperties(IntervalObserver.prototype, {
-		_initialize: {
-			value: function () {
-				var _this = this,
-						start = function () {
-							setTimeout(tick, INTERVAL_OBSERVER_RESCAN_INTERVAL);
-						},
-						tick = function () {
-							_this._checkDom();
-							start();
-						};
-
-				start();
-			}
-		},
-		_checkDom: {
-			value: function () {
-				var newElements = getAllAsArray();
-				if (hasChanged(this._currentElements, newElements)) {
-					this._currentElements = newElements;
-					this.emit(CUSTOM_EVENT_ON_MUTATION);
-				}
-
-			}
+		start();
+	},
+	_checkDom: function () {
+		var newElements = getAllAsArray();
+		if (hasChanged(this._currentElements, newElements)) {
+			this._currentElements = newElements;
+			this.emit(constants.CUSTOM_EVENT_ON_MUTATION);
 		}
-	});
 
-	return IntervalObserver;
-}());
+	}
+};
+
+smokesignals.convert(IntervalObserver);
+
+
+module.exports = IntervalObserver;

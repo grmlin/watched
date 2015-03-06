@@ -10,7 +10,6 @@
     "url": "https://github.com/grmlin/watched.git"
   },
   "dependencies": {
-    "object-assign": "^2.0.0",
     "smokesignals": "0.0.7"
   },
   "devDependencies": {
