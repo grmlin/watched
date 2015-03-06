@@ -16,7 +16,7 @@ Live, event driven dom element collections
 
 *TODO*
 
-### Donwload 
+### Download 
 
 Download from `/dist`
 
@@ -37,6 +37,9 @@ AMD
 
 ## Usage
 
+**The watched nodelists only contain elements that are part of the visual dom**. So if you remove 
+the parent element of, or the watched element itself, the nodelist will be empty.  
+If once removed element are stored somewhere and are later re-added to the dom, the lists may be filled again.
 
 ```javascript
 // give me nodelists

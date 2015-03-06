@@ -2,11 +2,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -14,7 +20,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -23,7 +29,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -32,7 +38,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 

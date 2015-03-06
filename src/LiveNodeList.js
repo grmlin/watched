@@ -6,12 +6,14 @@ var smokesignals     = require('smokesignals'),
 		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
-		diff             = function (target, other) {
-			return target.filter(function (element) {
-				return !helper.arrayContains(other, element);
-			});
-		};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+
+
+var diff = function (target, other) {
+	return target.filter(function (element) {
+		return !helper.arrayContains(other, element);
+	});
+};
 
 mutationObserver.init();
 

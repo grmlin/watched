@@ -141,12 +141,14 @@ var smokesignals     = require('smokesignals'),
 		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
-		diff             = function (target, other) {
-			return target.filter(function (element) {
-				return !helper.arrayContains(other, element);
-			});
-		};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+
+
+var diff = function (target, other) {
+	return target.filter(function (element) {
+		return !helper.arrayContains(other, element);
+	});
+};
 
 mutationObserver.init();
 
@@ -336,11 +338,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -348,7 +356,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -357,7 +365,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -366,7 +374,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -623,12 +631,14 @@ var smokesignals     = require('smokesignals'),
 		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
-		diff             = function (target, other) {
-			return target.filter(function (element) {
-				return !helper.arrayContains(other, element);
-			});
-		};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+
+
+var diff = function (target, other) {
+	return target.filter(function (element) {
+		return !helper.arrayContains(other, element);
+	});
+};
 
 mutationObserver.init();
 
@@ -982,11 +992,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -994,7 +1010,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -1003,7 +1019,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -1012,7 +1028,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -1269,12 +1285,14 @@ var smokesignals     = require('smokesignals'),
 		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
-		diff             = function (target, other) {
-			return target.filter(function (element) {
-				return !helper.arrayContains(other, element);
-			});
-		};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+
+
+var diff = function (target, other) {
+	return target.filter(function (element) {
+		return !helper.arrayContains(other, element);
+	});
+};
 
 mutationObserver.init();
 
@@ -1457,11 +1475,10 @@ describe('watched: added event', function () {
 	});
 
 	it('getElementsByTagName', function (done) {
-		var wrapper = document.createElement('div'),
-				inside = document.createElement('span'),
-				inside2 = document.createElement('span'),
+		var inside        = document.createElement('span'),
+				inside2       = document.createElement('span'),
 				insideInvalid = document.createElement('div'),
-				outside = document.createElement('span');
+				outside       = document.createElement('span');
 
 		var list = watched(wrapper).getElementsByTagName("span");
 		list.on('added', function (addedElements) {
@@ -1571,11 +1588,10 @@ describe('watched: changed event', function () {
 	});
 
 	it('getElementsByTagName', function (done) {
-		var wrapper = document.createElement('div'),
-				inside = document.createElement('span'),
-				inside2 = document.createElement('span'),
+		var inside        = document.createElement('span'),
+				inside2       = document.createElement('span'),
 				insideInvalid = document.createElement('div'),
-				outside = document.createElement('span');
+				outside       = document.createElement('span');
 
 		var list = watched(wrapper).getElementsByTagName("span");
 		list.on('changed', function (currentElements) {
@@ -1660,15 +1676,15 @@ describe('watched: removed event', function () {
 			} catch (e) {
 				done(e);
 			}
-		}).on('removed', function(removedElements){
-				try {
-					expect(list.length).to.equal(0);
-					expect(removedElements).to.contain(inside);
-					expect(list).to.not.contain(inside);
-					done();
-				} catch(e) {
-					done(e);
-				}
+		}).on('removed', function (removedElements) {
+			try {
+				expect(list.length).to.equal(0);
+				expect(removedElements).to.contain(inside);
+				expect(list).to.not.contain(inside);
+				done();
+			} catch (e) {
+				done(e);
+			}
 		});
 
 		document.body.appendChild(outside);
@@ -1710,24 +1726,136 @@ describe('watched: events can be dismissed', function () {
 			} catch (e) {
 				done(e);
 			}
-		}).on('removed', function(removedElements){
+		}).on('removed', function (removedElements) {
 			try {
 				expect(list.length).to.equal(0);
 				expect(removedElements).to.contain(inside);
 				expect(list).to.not.contain(inside);
 				done();
-			} catch(e) {
+			} catch (e) {
 				done(e);
 			}
 		});
 
-		setTimeout(function(){
+		setTimeout(function () {
 			done();
-		},1500);
+		}, 1500);
 
 		wrapper.appendChild(inside);
 	});
 });
+
+
+describe('watched: recognizes parent element removal', function () {
+	var classname,
+			wrapper,
+			inside,
+			inside2;
+
+	beforeEach(function () {
+		classname = "parent-removed-" + this.currentTest.title;
+		wrapper = document.createElement('div');
+		inside = document.createElement('div');
+		inside2 = document.createElement('div');
+
+		inside.className = classname;
+		inside2.className = classname;
+
+		document.body.appendChild(wrapper);
+	});
+
+
+	it('querySelectorAll', function (done) {
+		var list = watched(wrapper).querySelectorAll("." + classname);
+		var timesAdded = 0;
+
+		list.on('added', function (addedElements) {
+			try {
+				timesAdded++;
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+
+				if (timesAdded === 1) {
+					wrapper.parentElement.removeChild(wrapper);
+				} else if (timesAdded === 2) {
+					done();
+				}
+			} catch (e) {
+				done(e);
+			}
+		}).on('removed', function (removedElements) {
+			try {
+				expect(list.length).to.equal(0);
+				expect(removedElements).to.contain(inside);
+				expect(list).to.not.contain(inside);
+				document.body.appendChild(wrapper);
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+	});
+});
+
+
+describe('watched: elements can be removed and added again', function () {
+	var classname,
+			wrapper,
+			inside,
+			inside2;
+
+	beforeEach(function () {
+		classname = "parent-readded-" + this.currentTest.title;
+		wrapper = document.createElement('div');
+		inside = document.createElement('div');
+		inside2 = document.createElement('div');
+
+		inside.className = classname;
+		inside2.className = classname;
+
+		document.body.appendChild(wrapper);
+	});
+
+
+	it('querySelectorAll', function (done) {
+		var list = watched(wrapper).querySelectorAll("." + classname);
+		var timesAdded = 0;
+
+		list.on('added', function (addedElements) {
+			try {
+				timesAdded++;
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+
+				if (timesAdded === 1) {
+					wrapper.removeChild(inside);
+					wrapper.removeChild(inside2);
+				} else if (timesAdded === 2) {
+					done();
+				}
+			} catch (e) {
+				done(e);
+			}
+		}).on('removed', function (removedElements) {
+			try {
+				expect(list.length).to.equal(0);
+				expect(removedElements).to.contain(inside);
+				expect(list).to.not.contain(inside);
+				wrapper.appendChild(inside);
+				wrapper.appendChild(inside2);
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+	});
+})
 },{"../watched":11}],6:[function(require,module,exports){
 var helper = require('../util/helper');
 
@@ -1753,11 +1881,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -1765,7 +1899,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -1774,7 +1908,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -1783,7 +1917,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -2024,11 +2158,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -2036,7 +2176,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -2045,7 +2185,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -2054,7 +2194,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
