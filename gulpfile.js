@@ -72,26 +72,10 @@ gulp.task('uglify', function () {
 		.pipe(rename({
 			suffix: ".min"
 		}))
+		.pipe(wrap({src: 'build/licenseHeader.tpl'}, {version: version}, {variable: 'data'}))
 		.pipe(gulp.dest('dist'))
 		.pipe(gzip())
 		.pipe(gulp.dest("dist"));
-
-	//gulp.src('lib/watched.js')
-	//		.pipe(include())
-	//		.pipe(wrap({ src: 'build/umdWrapper.tpl'}))
-	//		.pipe(wrap({ src: 'build/licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
-	//		.pipe(gulp.dest('./dist'))
-	//		.pipe(uglify({
-	//			outSourceMap: false,
-	//			mangle: true
-	//		}))
-	//		.pipe(wrap({ src: 'build/licenseHeader.tpl'}, { version: version}, { variable: 'data' }))
-	//		.pipe(rename({
-	//			suffix: ".min"
-	//		}))
-	//		.pipe(gulp.dest('dist'))
-	//		.pipe(gzip())
-	//		.pipe(gulp.dest("dist"));
 });
 
 gulp.task("compress", function () {

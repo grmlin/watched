@@ -1,6 +1,6 @@
 {
-  "name": "watched.js",
-  "version": "0.1.0",
+  "name": "watched",
+  "version": "0.3.0",
   "homepage": "https://github.com/grmlin/watched",
   "authors": [
     "Andreas Wehr <iam@grml.in>"
@@ -21,5 +21,10 @@
     "bower_components",
     "test",
     "tests"
+  ],
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
   ]
 }
