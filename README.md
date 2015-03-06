@@ -6,6 +6,37 @@ Live, event driven dom element collections
 - [Website](http://grmlin.github.io/watched/)
 - [Demo](http://grmlin.github.io/watched/demo.html)
 
+## Installation
+
+### NPM
+
+	$ npm install watched --save
+
+### Bower
+
+*TODO*
+
+### Donwload 
+
+Download from `/dist`
+
+## Load
+
+Node/Browserify
+
+	var watched = require('watched');
+	
+Browser
+
+	<script src="watched.js"></script>
+	
+AMD
+
+*TODO*
+
+
+## Usage
+
 
 ```javascript
 // give me nodelists
