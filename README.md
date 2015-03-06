@@ -109,6 +109,8 @@ In either case only a single mutation observer will be created for the scripts l
 ### watched
 The globally available namespace. Can be used to either get a `LiveNodeList` directly or a decorated dom element to create lists with different queries by yourself.
 
+<br />
+<br />
 
 #### watched(selector) : [LiveNodeList](#livenodelist)
 
@@ -132,7 +134,7 @@ var foos = watched(document).querySelectorAll('.foo');
 ##### returns
 Type: [`LiveNodeList`](#livenodelist)
 
-
+<br />
 
 #### watched(element) : [DomElement](#domelement)
 
@@ -150,6 +152,7 @@ var  el = watched(document);
 ##### returns
 Type: [`DomElement`](#domelement)
 
+<br /><br />
 ### DomElement
 
 Class decorating native dom elements so it uses the internal `LiveNodeList`
