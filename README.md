@@ -93,6 +93,8 @@ In either case only a single mutation observer will be created for the scripts l
 
 ## Important notes
 
+- **Only elements in the visual dom are affected.** Whenever an element or it's parent is removed from the dom, it will be removed from the live nodelist
+
 - **The dom mutation listener is debounced!** That's why massive changes to the dom will happen in batches, not individually, and take some time. (20ms at the moment)
 
 - **Always use the ` added`, `removed` and `changed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
