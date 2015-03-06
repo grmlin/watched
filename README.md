@@ -109,9 +109,15 @@ In either case only a single mutation observer will be created for the scripts l
 ### watched
 The globally available namespace. Can be used to either get a `LiveNodeList` directly or a decorated dom element to create lists with different queries by yourself.
 
+
 #### watched(selector) : [LiveNodeList](#livenodelist)
 
 Shorthand to create a [`LiveNodeList`](#livenodelist) using `document` as the parent element and [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist).
+
+name      | type          | description
+------------- | ------------- |-------------
+`selector`    | string        | The selector you would also use in [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist)
+
 
 ```javascript
 var foos = watched('.foo');
@@ -123,28 +129,23 @@ the same nodelist can be created with
 var foos = watched(document).querySelectorAll('.foo');
 ```
 
-##### selector
-Type: `string`
-
-The selector you would also use in [`DomElement#querySelectorAll`](#domelementqueryselectorallselector--livenodelist)
-
-
 ##### returns
 Type: [`LiveNodeList`](#livenodelist)
 
+
+
 #### watched(element) : [DomElement](#domelement)
 
-Creates the `DomElement` decorator we need.
+Creates the `DomElement` decorator we use.
+
+name          | type              | description
+------------- | ------------- |-------------
+`element `    | HTMLElement   | The dom element you want to wrap.
+
 
 ```javascript
 var  el = watched(document);
 ```
-
-##### element
-Type: `HTMLElement`
-
-The dom element you want to wrap.
-
 
 ##### returns
 Type: [`DomElement`](#domelement)
@@ -157,36 +158,63 @@ Class decorating native dom elements so it uses the internal `LiveNodeList`
 
 See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
 
+name          | type          | description
+------------- | ------------- |-------------
+`selector`    | string        | the `querySelectorAll` selector
+
+
 ```javascript
 var nodeList = watched(document).querySelectorAll('.foo');
 ```
+
+##### returns
+Type: [`LiveNodeList `](#livenodelist)
+
 
 #### DomElement#querySelector(selector) : [LiveNodeList](#livenodelist)
 
 See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will be always a `LiveNodeList`, not a single element as in the native `querySelector`.
 
+
+name          | type          | description
+------------- | ------------- |-------------
+`selector`    | string        | the `querySelector` selector
+
 ```javascript
 var nodeList = watched(document).querySelector('.foo');
 ```
 
+##### returns
+Type: [`LiveNodeList `](#livenodelist)
 
 #### DomElement#getElementsByTagName(selector) : [LiveNodeList](#livenodelist)
 
 See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
 
+
+name          | type          | description
+------------- | ------------- |-------------
+`selector`    | string        | the `getElementsByTagName ` selector
+
 ```javascript
 var nodeList = watched(document).getElementsByTagName('a');
 ```
-
+##### returns
+Type: [`LiveNodeList `](#livenodelist)
 
 #### DomElement#getElementsByClassName(selector) : [LiveNodeList](#livenodelist)
 
 See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
 
+name          | type          | description
+------------- | ------------- |-------------
+`selector`    | string        | the `getElementsByClassName ` class name
+
 ```javascript
 var nodeList = watched(document).getElementsByClassName('.foo');
 ```
-
+##### returns
+Type: [`LiveNodeList `](#livenodelist)
 
 ### LiveNodeList
 
@@ -203,30 +231,37 @@ Current length of the nodelist
 
 Adds an event listener
 
-##### eventName
-Type: `string`
+name          | type          | description
+------------- | ------------- |-------------
+`eventName `  | string        | see [events](#livenodelist.events) for available event types
+`callback`    | function      | event callback method
 
-see [events](#livenodelist.events) for available event types
-
-#### callback
-Type: `function`
+```javascript
+nodeList.on('changed', onChanged);
+```
 
 #### LiveNodeList#off(eventName, callback)
 
 Removes an event listener
 
-##### eventName
-Type: `string`
+name          | type          | description
+------------- | ------------- |-------------
+`eventName `  | string        | see [events](#livenodelist.events) for available event types
+`callback`    | function      | event callback method
 
-see [events](#livenodelist.events) for available event types
-
-#### callback
-Type: `function`
+```javascript
+nodeList.off('changed', onChanged);
+```
 
 
 #### LiveNodeList#forEach(callback)
 
 see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+
+name          | type          | description
+------------- | ------------- |-------------
+`callback`    | function      | callback called for each element in the nodelist
+
 
 ```javascript
 nodeList.forEach(function(element){
@@ -236,7 +271,7 @@ nodeList.forEach(function(element){
 
 #### LiveNodeList#pause()
 
-Freezes the nodelist in it's current form and removes the dom mutation listener
+Freezes the nodelist in it's current form and pauses the dom mutation listener
 
 ```javascript
 nodeList.pause();
@@ -252,7 +287,7 @@ nodeList.resume();
 
 #### LiveNodeList.Events
 
-#### "changed"
+#### <mark>"changed"</mark>
 
 Event called when new elements are added to or removed from the dom
 
@@ -264,7 +299,7 @@ nodeList.on('changed', function(currentElements){
 
 The event listeners callback will be called with one argument: an array containing all elements currently in the list
 
-#### "added"
+#### <mark>"added"</mark>
 Event called when new elements are added to the dom
 
 ```javascript
@@ -275,7 +310,7 @@ nodeList.on('added', function(newElements){
 
 The event listeners callback will be called with one argument: an array containing the newly found dom elements
 
-#### "removed"
+#### <mark>"removed"</mark>
 
 Event called when elements are removed from the dom
 
