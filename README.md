@@ -216,6 +216,8 @@ var nodeList = watched(document).getElementsByClassName('.foo');
 ##### returns
 Type: [`LiveNodeList `](#livenodelist)
 
+----
+
 ### LiveNodeList
 
 A list of dom elements, always up to date. It's "array-like", similar to jquery objects or native node lists.
@@ -285,9 +287,11 @@ Resumes all dom mutation listeners and will update the nodelist, if it changes
 nodeList.resume();
 ```
 
+----
+
 #### LiveNodeList.Events
 
-#### <mark>"changed"</mark>
+#### "changed"
 
 Event called when new elements are added to or removed from the dom
 
@@ -299,7 +303,7 @@ nodeList.on('changed', function(currentElements){
 
 The event listeners callback will be called with one argument: an array containing all elements currently in the list
 
-#### <mark>"added"</mark>
+#### "added"
 Event called when new elements are added to the dom
 
 ```javascript
@@ -310,7 +314,7 @@ nodeList.on('added', function(newElements){
 
 The event listeners callback will be called with one argument: an array containing the newly found dom elements
 
-#### <mark>"removed"</mark>
+#### "removed"
 
 Event called when elements are removed from the dom
 
