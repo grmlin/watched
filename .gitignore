@@ -3,3 +3,4 @@ node_modules
 .idea/tasks.xml
 
 test/lib/*.js
+npm-debug.log
