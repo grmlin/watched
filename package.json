@@ -1,6 +1,17 @@
 {
-  "name": "watched.js",
-  "version": "0.2.0",
+  "name": "watched",
+  "version": "0.3.0",
+  "description": "Live, event driven dom element collections ",
+  "main": "src/watched.js",
+  "keywords": [
+    "MutationObserver",
+    "NodeList",
+    "live HTMLCollection",
+    "querySelectorAll",
+    "querySelector",
+    "getElementsByTagName",
+    "getElementsByClassName"
+  ],
   "author": {
     "name": "Andreas Wehr"
   },
@@ -9,6 +20,10 @@
     "type": "git",
     "url": "https://github.com/grmlin/watched.git"
   },
+  "bugs": {
+    "url": "https://github.com/grmlin/watched/issues"
+  },
+  "homepage": "https://github.com/grmlin/watched",
   "dependencies": {
     "smokesignals": "0.0.7"
   },
