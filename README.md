@@ -14,8 +14,9 @@ Live, event driven dom element collections
 
 ### Bower
 
-*TODO*
-
+   $ bower install watched
+   
+   
 ### Download 
 
 Download from `/dist`
@@ -153,6 +154,11 @@ var  el = watched(document);
 Type: [`DomElement`](#domelement)
 
 <br /><br />
+
+------
+
+<br /><br />
+
 ### DomElement
 
 Class decorating native dom elements so it uses the internal `LiveNodeList`
@@ -173,7 +179,7 @@ var nodeList = watched(document).querySelectorAll('.foo');
 ##### returns
 Type: [`LiveNodeList `](#livenodelist)
 
-
+<br />
 #### DomElement#querySelector(selector) : [LiveNodeList](#livenodelist)
 
 See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will be always a `LiveNodeList`, not a single element as in the native `querySelector`.
@@ -190,6 +196,8 @@ var nodeList = watched(document).querySelector('.foo');
 ##### returns
 Type: [`LiveNodeList `](#livenodelist)
 
+<br />
+
 #### DomElement#getElementsByTagName(selector) : [LiveNodeList](#livenodelist)
 
 See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
@@ -205,6 +213,8 @@ var nodeList = watched(document).getElementsByTagName('a');
 ##### returns
 Type: [`LiveNodeList `](#livenodelist)
 
+<br />
+
 #### DomElement#getElementsByClassName(selector) : [LiveNodeList](#livenodelist)
 
 See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
@@ -219,7 +229,11 @@ var nodeList = watched(document).getElementsByClassName('.foo');
 ##### returns
 Type: [`LiveNodeList `](#livenodelist)
 
+<br /><br />
+
 ----
+
+<br /><br />
 
 ### LiveNodeList
 
@@ -245,6 +259,8 @@ name          | type          | description
 nodeList.on('changed', onChanged);
 ```
 
+<br />
+
 #### LiveNodeList#off(eventName, callback)
 
 Removes an event listener
@@ -258,6 +274,7 @@ name          | type          | description
 nodeList.off('changed', onChanged);
 ```
 
+<br />
 
 #### LiveNodeList#forEach(callback)
 
@@ -274,6 +291,8 @@ nodeList.forEach(function(element){
 });
 ```
 
+<br />
+
 #### LiveNodeList#pause()
 
 Freezes the nodelist in it's current form and pauses the dom mutation listener
@@ -281,6 +300,8 @@ Freezes the nodelist in it's current form and pauses the dom mutation listener
 ```javascript
 nodeList.pause();
 ```
+
+<br />
 
 #### LiveNodeList#resume()
 
@@ -290,9 +311,13 @@ Resumes all dom mutation listeners and will update the nodelist, if it changes
 nodeList.resume();
 ```
 
+<br /><br />
+
 ----
 
-#### LiveNodeList.Events
+<br /><br />
+
+### LiveNodeList Events
 
 #### "changed"
 
@@ -306,6 +331,9 @@ nodeList.on('changed', function(currentElements){
 
 The event listeners callback will be called with one argument: an array containing all elements currently in the list
 
+<br />
+
+
 #### "added"
 Event called when new elements are added to the dom
 
@@ -316,6 +344,9 @@ nodeList.on('added', function(newElements){
 ```
 
 The event listeners callback will be called with one argument: an array containing the newly found dom elements
+
+<br />
+
 
 #### "removed"
 
