@@ -1,7 +1,42 @@
 watched.js
 ==========
 
-Live, event driven NodeList collections 
+Live, event driven dom element collections 
+
+- [Website](http://grmlin.github.io/watched/)
+- [Demo](http://grmlin.github.io/watched/demo.html)
+
+## Installation
+
+### NPM
+
+	$ npm install watched --save
+
+### Bower
+
+*TODO*
+
+### Donwload 
+
+Download from `/dist`
+
+## Load
+
+Node/Browserify
+
+	var watched = require('watched');
+	
+Browser
+
+	<script src="watched.js"></script>
+	
+AMD
+
+*TODO*
+
+
+## Usage
+
 
 ```javascript
 // give me nodelists
@@ -50,7 +85,7 @@ Behind the scenes, **watched.js** uses the all new [`MutationObserver`](http://d
 
 An interval based fallback is included, so older browsers will profit, too. Anything >= IE9 should be fine.
 
-In either case only a single mutation observer will be created for the scripts lifespan. All `LiveNodeList` instances will listens to this one observer. 
+In either case only a single mutation observer will be created for the scripts lifespan. All `LiveNodeList` instances will listen to this one observer. 
 
 
 ## Important notes
@@ -59,7 +94,7 @@ In either case only a single mutation observer will be created for the scripts l
 
 - **Always use the ` added`, `removed` and `changed` events!** The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). 
 
-- **The fallback is slower than native!** It uses a intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. 
+- **The fallback is slower than native!** It uses an intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. 
 
 - **The magic might become expensive!** You better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background, when the dom changes!
 
@@ -247,3 +282,8 @@ nodeList.on('removed', function(removedElements){
 
 The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
 
+
+## Thanks
+
+- [DECAF](http://decaf.de/)
+- [smokesignals.js](https://bitbucket.org/bentomas/smokesignals.js/) - used as event emitter

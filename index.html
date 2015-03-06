@@ -1,324 +1,57 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Watched by grmlin</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="bower_components/bootswatch/yeti/bootstrap.min.css"/>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
+</head>
+<body>
+<div class="wrapper">
+    <header>
         <h1>Watched</h1>
-        <p>watched.js - Live, event driven dom element collections</p>
 
-        <p class="view"><a href="https://github.com/grmlin/watched">View the Project on GitHub <small>grmlin/watched</small></a></p>
+        <p>watched.js - Live, event driven dom element collections</p>
 
 
         <ul>
-          <li><a href="https://github.com/grmlin/watched/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/grmlin/watched/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/grmlin/watched">View On <strong>GitHub</strong></a></li>
+            <li><a href="https://github.com/grmlin/watched/zipball/master">Download <strong>ZIP File</strong></a></li>
+            <li><a href="https://github.com/grmlin/watched/tarball/master">Download <strong>TAR Ball</strong></a></li>
+            <li><a href="https://github.com/grmlin/watched">View On <strong>GitHub</strong></a></li>
         </ul>
-      </header>
-      <section>
-        <h1>
-<a name="watchedjs" class="anchor" href="#watchedjs"><span class="octicon octicon-link"></span></a>watched.js</h1>
+    </header>
+    <section>
 
-<p>Live, event driven dom element collections </p>
 
-<ul>
-<li><a href="http://grmlin.github.io/watched/">Website</a></li>
-<li><a href="http://grmlin.github.io/watched/demo.html">Demo</a></li>
-</ul><div class="highlight highlight-javascript"><pre><span class="c1">// give me nodelists</span>
+        <h3>Read the documentation</h3>
+        <p class="lead">
+            <a class="btn btn-default" href="https://github.com/grmlin/watched">https://github.com/grmlin/watched</a>
+        </p>
+        <h3>Try it</h3>
+        <p class="lead">
+            <a class="btn btn-default" href="demo.html">Demo</a>
+        </p>
 
-<span class="c1">// quick</span>
-<span class="kd">var</span> <span class="nx">foos</span>  <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span> 
-<span class="c1">// or more specific</span>
-<span class="kd">var</span> <span class="nx">foos2</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span> <span class="c1">// same as watched('.foo')</span>
-<span class="kd">var</span> <span class="nx">bars</span>  <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">'.bar'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">bazs</span>  <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">'.baz'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">links</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">'a'</span><span class="p">);</span>
 
-<span class="c1">// need the length</span>
-<span class="kd">var</span> <span class="nx">linkcount</span> <span class="o">=</span> <span class="nx">links</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-
-<span class="c1">// access elements directly </span>
-<span class="kd">var</span> <span class="nx">aLink</span> <span class="o">=</span> <span class="nx">links</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-
-<span class="c1">// or iterate</span>
-<span class="nx">foos</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">){</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="c1">// finally, stay up to date, when elements are added</span>
-<span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'added'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">addedElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">addedElements</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="c1">// removed</span>
-<span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'removed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">removedElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">removedElements</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="c1">// or changed in general</span>
-<span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'changed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currentElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">currentElements</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-
-<h2>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
-
-<p>Include the latest build you can find inside the <code>dist</code> folder in your html.</p>
-
-<h2>
-<a name="how" class="anchor" href="#how"><span class="octicon octicon-link"></span></a>How?</h2>
-
-<p>Behind the scenes, <strong>watched.js</strong> uses the all new <a href="http://devdocs.io/dom/mutationobserver"><code>MutationObserver</code></a> to detect changes in the dom. <a href="http://caniuse.com/#feat=mutationobserver">Browser support</a> is quite good these days.</p>
-
-<p>An interval based fallback is included, so older browsers will profit, too. Anything &gt;= IE9 should be fine.</p>
-
-<p>In either case only a single mutation observer will be created for the scripts lifespan. All <code>LiveNodeList</code> instances will listens to this one observer. </p>
-
-<h2>
-<a name="important-notes" class="anchor" href="#important-notes"><span class="octicon octicon-link"></span></a>Important notes</h2>
-
-<ul>
-<li><p><strong>The dom mutation listener is debounced!</strong> That's why massive changes to the dom will happen in batches, not individually, and take some time. (20ms at the moment)</p></li>
-<li><p><strong>Always use the <code>added</code>, <code>removed</code> and <code>changed</code> events!</strong> The node lists are live and bound to changes in the dom, but never called synchronously after the dom changed (see debouncing above). </p></li>
-<li><p><strong>The fallback is slower than native!</strong> It uses an intervall to scan for changes. It's not a good idea to do this too often, so the current timeout is set to 500ms. </p></li>
-<li><p><strong>The magic might become expensive!</strong> You better not use hundreds of live nodelists, they will all be updated and the queries re-evaluated in the background, when the dom changes!</p></li>
-</ul><h2>
-<a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
-
-<h3>
-<a name="watched" class="anchor" href="#watched"><span class="octicon octicon-link"></span></a>watched</h3>
-
-<p>The globally available namespace. Can be used to either get a <code>LiveNodeList</code> directly or a decorated dom element to create lists with different queries by yourself.</p>
-
-<h4>
-<a name="watchedselector--livenodelist" class="anchor" href="#watchedselector--livenodelist"><span class="octicon octicon-link"></span></a>watched(selector) : <a href="#livenodelist">LiveNodeList</a>
-</h4>
-
-<p>Shorthand to create a <a href="#livenodelist"><code>LiveNodeList</code></a> using <code>document</code> as the parent element and <a href="#domelementqueryselectorallselector--livenodelist"><code>DomElement#querySelectorAll</code></a>.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">foos</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span>
-</pre></div>
-
-<p>the same nodelist can be created with</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">foos</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span>
-</pre></div>
-
-<h5>
-<a name="selector" class="anchor" href="#selector"><span class="octicon octicon-link"></span></a>selector</h5>
-
-<p>Type: <code>string</code></p>
-
-<p>The selector you would also use in <a href="#domelementqueryselectorallselector--livenodelist"><code>DomElement#querySelectorAll</code></a></p>
-
-<h5>
-<a name="returns" class="anchor" href="#returns"><span class="octicon octicon-link"></span></a>returns</h5>
-
-<p>Type: <a href="#livenodelist"><code>LiveNodeList</code></a></p>
-
-<h4>
-<a name="watchedelement--domelement" class="anchor" href="#watchedelement--domelement"><span class="octicon octicon-link"></span></a>watched(element) : <a href="#domelement">DomElement</a>
-</h4>
-
-<p>Creates the <code>DomElement</code> decorator we need.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span>  <span class="nx">el</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
-</pre></div>
-
-<h5>
-<a name="element" class="anchor" href="#element"><span class="octicon octicon-link"></span></a>element</h5>
-
-<p>Type: <code>HTMLElement</code></p>
-
-<p>The dom element you want to wrap.</p>
-
-<h5>
-<a name="returns-1" class="anchor" href="#returns-1"><span class="octicon octicon-link"></span></a>returns</h5>
-
-<p>Type: <a href="#domelement"><code>DomElement</code></a></p>
-
-<h3>
-<a name="domelement" class="anchor" href="#domelement"><span class="octicon octicon-link"></span></a>DomElement</h3>
-
-<p>Class decorating native dom elements so it uses the internal <code>LiveNodeList</code></p>
-
-<h4>
-<a name="domelementqueryselectorallselector--livenodelist" class="anchor" href="#domelementqueryselectorallselector--livenodelist"><span class="octicon octicon-link"></span></a>DomElement#querySelectorAll(selector) : <a href="#livenodelist">LiveNodeList</a>
-</h4>
-
-<p>See <a href="http://devdocs.io/dom/document.queryselectorall"><code>querySelectorAll</code></a> for details.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">nodeList</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span>
-</pre></div>
-
-<h4>
-<a name="domelementqueryselectorselector--livenodelist" class="anchor" href="#domelementqueryselectorselector--livenodelist"><span class="octicon octicon-link"></span></a>DomElement#querySelector(selector) : <a href="#livenodelist">LiveNodeList</a>
-</h4>
-
-<p>See <a href="http://devdocs.io/dom/document.queryselector"><code>querySelector</code></a> for details. The returned object will be always a <code>LiveNodeList</code>, not a single element as in the native <code>querySelector</code>.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">nodeList</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span>
-</pre></div>
-
-<h4>
-<a name="domelementgetelementsbytagnameselector--livenodelist" class="anchor" href="#domelementgetelementsbytagnameselector--livenodelist"><span class="octicon octicon-link"></span></a>DomElement#getElementsByTagName(selector) : <a href="#livenodelist">LiveNodeList</a>
-</h4>
-
-<p>See <a href="http://devdocs.io/dom/element.getelementsbytagname"><code>getElementsByTagName</code></a> for details. Should be faster than the query selectors, as <strong>watched.js</strong> uses the native live nodelist internally to get the elements you want.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">nodeList</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">'a'</span><span class="p">);</span>
-</pre></div>
-
-<h4>
-<a name="domelementgetelementsbyclassnameselector--livenodelist" class="anchor" href="#domelementgetelementsbyclassnameselector--livenodelist"><span class="octicon octicon-link"></span></a>DomElement#getElementsByClassName(selector) : <a href="#livenodelist">LiveNodeList</a>
-</h4>
-
-<p>See <a href="http://devdocs.io/dom/document.getelementsbyclassname"><code>getElementsByClassName</code></a> for details. Should be faster than the query selectors, as <strong>watched.js</strong> uses the native live nodelist internally to get the elements you want.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">nodeList</span> <span class="o">=</span> <span class="nx">watched</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">'.foo'</span><span class="p">);</span>
-</pre></div>
-
-<h3>
-<a name="livenodelist" class="anchor" href="#livenodelist"><span class="octicon octicon-link"></span></a>LiveNodeList</h3>
-
-<p>A list of dom elements, always up to date. It's "array-like", similar to jquery objects or native node lists.</p>
-
-<ul>
-<li>live list, similar to the list returned by <code>getElementsBy(Tag|Class)Name</code>
-</li>
-<li>dispatches event, if the list changed!</li>
-</ul><h4>
-<a name="livenodelistlength" class="anchor" href="#livenodelistlength"><span class="octicon octicon-link"></span></a>LiveNodeList#length</h4>
-
-<p>Current length of the nodelist</p>
-
-<h4>
-<a name="livenodelistoneventname-callback" class="anchor" href="#livenodelistoneventname-callback"><span class="octicon octicon-link"></span></a>LiveNodeList#on(eventName, callback)</h4>
-
-<p>Adds an event listener</p>
-
-<h5>
-<a name="eventname" class="anchor" href="#eventname"><span class="octicon octicon-link"></span></a>eventName</h5>
-
-<p>Type: <code>string</code></p>
-
-<p>see <a href="#livenodelist.events">events</a> for available event types</p>
-
-<h4>
-<a name="callback" class="anchor" href="#callback"><span class="octicon octicon-link"></span></a>callback</h4>
-
-<p>Type: <code>function</code></p>
-
-<h4>
-<a name="livenodelistoffeventname-callback" class="anchor" href="#livenodelistoffeventname-callback"><span class="octicon octicon-link"></span></a>LiveNodeList#off(eventName, callback)</h4>
-
-<p>Removes an event listener</p>
-
-<h5>
-<a name="eventname-1" class="anchor" href="#eventname-1"><span class="octicon octicon-link"></span></a>eventName</h5>
-
-<p>Type: <code>string</code></p>
-
-<p>see <a href="#livenodelist.events">events</a> for available event types</p>
-
-<h4>
-<a name="callback-1" class="anchor" href="#callback-1"><span class="octicon octicon-link"></span></a>callback</h4>
-
-<p>Type: <code>function</code></p>
-
-<h4>
-<a name="livenodelistforeachcallback" class="anchor" href="#livenodelistforeachcallback"><span class="octicon octicon-link"></span></a>LiveNodeList#forEach(callback)</h4>
-
-<p>see the native <a href="http://devdocs.io/javascript/global_objects/array/foreach"><code>Array.forEach</code></a> for details.</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">){</span>
-    <span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="s2">"green"</span><span class="p">;</span>
-<span class="p">});</span>
-</pre></div>
-
-<h4>
-<a name="livenodelistpause" class="anchor" href="#livenodelistpause"><span class="octicon octicon-link"></span></a>LiveNodeList#pause()</h4>
-
-<p>Freezes the nodelist in it's current form and removes the dom mutation listener</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
-</pre></div>
-
-<h4>
-<a name="livenodelistresume" class="anchor" href="#livenodelistresume"><span class="octicon octicon-link"></span></a>LiveNodeList#resume()</h4>
-
-<p>Resumes all dom mutation listeners and will update the nodelist, if it changes</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">resume</span><span class="p">();</span>
-</pre></div>
-
-<h4>
-<a name="livenodelistevents" class="anchor" href="#livenodelistevents"><span class="octicon octicon-link"></span></a>LiveNodeList.Events</h4>
-
-<h4>
-<a name="changed" class="anchor" href="#changed"><span class="octicon octicon-link"></span></a>"changed"</h4>
-
-<p>Event called when new elements are added to or removed from the dom</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'changed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currentElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">currentElements</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-
-<p>The event listeners callback will be called with one argument: an array containing all elements currently in the list</p>
-
-<h4>
-<a name="added" class="anchor" href="#added"><span class="octicon octicon-link"></span></a>"added"</h4>
-
-<p>Event called when new elements are added to the dom</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'added'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">newElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">newElements</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-
-<p>The event listeners callback will be called with one argument: an array containing the newly found dom elements</p>
-
-<h4>
-<a name="removed" class="anchor" href="#removed"><span class="octicon octicon-link"></span></a>"removed"</h4>
-
-<p>Event called when elements are removed from the dom</p>
-
-<div class="highlight highlight-javascript"><pre><span class="nx">nodeList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'removed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">removedElements</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">removedElements</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-
-<p>The event listeners callback will be called with one argument: an array <code>removedElements</code> containing the dom elements removed from the list (removed from the dom)</p>
-
-<h2>
-<a name="thanks" class="anchor" href="#thanks"><span class="octicon octicon-link"></span></a>Thanks</h2>
-
-<ul>
-<li><a href="http://decaf.de/">DECAF</a></li>
-<li>
-<a href="https://bitbucket.org/bentomas/smokesignals.js/">smokesignals.js</a> - used as event emitter</li>
-</ul>
-      </section>
-      <footer>
+    </section>
+    <footer>
         <p>This project is maintained by <a href="https://github.com/grmlin">grmlin</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
-  </body>
+
+        <p>
+            <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a>
+            </small>
+        </p>
+    </footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+
+</body>
 </html>
