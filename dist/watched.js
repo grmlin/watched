@@ -1,4 +1,4 @@
-/*!watched.js 0.3.0 - (c) 2014 Andreas Wehr - https://github.com/grmlin/watched - Licensed under MIT license*/(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*!watched.js 0.3.1 - (c) 2014 Andreas Wehr - https://github.com/grmlin/watched - Licensed under MIT license*/(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 var existed = false;
 var old;
@@ -141,12 +141,14 @@ var smokesignals     = require('smokesignals'),
 		};
 
 // The one and only local instance of a mutation observer
-var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver),
-		diff             = function (target, other) {
-			return target.filter(function (element) {
-				return !helper.arrayContains(other, element);
-			});
-		};
+var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+
+
+var diff = function (target, other) {
+	return target.filter(function (element) {
+		return !helper.arrayContains(other, element);
+	});
+};
 
 mutationObserver.init();
 
@@ -267,11 +269,17 @@ var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
+var filterNodesInDocument = function(nodeArray){
+	return nodeArray.filter(function(node) {
+		return document.contains(node);
+	});
+};
+
 // element.querySelectorAll
 strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -279,7 +287,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
-		return node === null ? [] : [node];
+		return filterNodesInDocument(node === null ? [] : [node]);
 	}
 };
 
@@ -288,7 +296,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
@@ -297,7 +305,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
-		return helper.nodeListToArray(nodeList);
+		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	}
 };
 
