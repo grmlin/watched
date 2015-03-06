@@ -140,6 +140,119 @@ describe('watched: added event', function () {
 
 });
 
+describe('watched: added event', function () {
+	var classname,
+			wrapper,
+			inside,
+			outside;
+
+	beforeEach(function () {
+		classname = "supports-" + this.currentTest.title;
+		wrapper = document.createElement('div');
+		inside = document.createElement('div');
+		outside = document.createElement('div');
+
+		inside.className = classname;
+		outside.className = classname;
+
+		document.body.appendChild(wrapper);
+	});
+
+	it('querySelectorAll', function (done) {
+
+		var list = watched(wrapper).querySelectorAll("." + classname);
+		list.on('added', function (addedElements) {
+			try {
+				list.off('added');
+				expect(list.length).to.equal(1);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.not.contain(outside);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+	});
+
+	it('querySelector', function (done) {
+
+		var list = watched(wrapper).querySelector("." + classname);
+		list.on('added', function (addedElements) {
+			try {
+				list.off('added');
+				expect(list.length).to.equal(1);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.not.contain(outside);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+	});
+
+	it('getElementsByTagName', function (done) {
+		var inside        = document.createElement('span'),
+				inside2       = document.createElement('span'),
+				insideInvalid = document.createElement('div'),
+				outside       = document.createElement('span');
+
+		var list = watched(wrapper).getElementsByTagName("span");
+		list.on('added', function (addedElements) {
+			try {
+				list.off('added');
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+				expect(addedElements).to.not.contain(outside);
+				expect(addedElements).to.not.contain(insideInvalid);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+		wrapper.appendChild(insideInvalid);
+	});
+
+	it('getElementsByClassName', function (done) {
+		var inside2       = document.createElement('div'),
+				insideInvalid = document.createElement('div');
+
+		inside2.className = classname;
+		insideInvalid.className = classname + "-NOT";
+
+		var list = watched(wrapper).getElementsByClassName(classname);
+		list.on('added', function (addedElements) {
+			try {
+				list.off('added');
+				expect(list.length).to.equal(2);
+				expect(addedElements).to.contain(inside);
+				expect(addedElements).to.contain(inside2);
+				expect(addedElements).to.not.contain(outside);
+				expect(addedElements).to.not.contain(insideInvalid);
+				done();
+			} catch (e) {
+				done(e);
+			}
+		});
+
+		document.body.appendChild(outside);
+		wrapper.appendChild(inside);
+		wrapper.appendChild(inside2);
+		wrapper.appendChild(insideInvalid);
+	});
+
+});
+
 
 describe('watched: changed event', function () {
 	var classname,
@@ -464,4 +577,4 @@ describe('watched: elements can be removed and added again', function () {
 		wrapper.appendChild(inside);
 		wrapper.appendChild(inside2);
 	});
-})
+});

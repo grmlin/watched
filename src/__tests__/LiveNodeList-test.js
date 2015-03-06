@@ -17,6 +17,23 @@ describe('LiveNodeList', function () {
 		expect(list.length).to.be.a('number');
 	});
 
+	it('finds elements that are already in the dom', function () {
+		var el1 = document.createElement('div'),
+				el2 = document.createElement('div'),
+				el3 = document.createElement('div');
+
+		el1.className = "finds-existing";
+		el2.className = "finds-existing";
+		el3.className = "finds-existing";
+
+		document.body.appendChild(el1);
+		document.body.appendChild(el2);
+		document.body.appendChild(el3);
+
+		var list1 = element.querySelectorAll('.finds-existing');
+		expect(list1.length).to.equal(3);
+	});
+
 	it('knows the length', function () {
 		var el1 = document.createElement('div'),
 				el2 = document.createElement('div'),
