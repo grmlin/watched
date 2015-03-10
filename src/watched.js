@@ -15,7 +15,8 @@ var DomElement = require('./DomElement');
  * var foos = watched(document).querySelectorAll('.foo'); // DomElement
  *
  *
- * @param {String|HTMLElement} element
+ * @param {String|HTMLElement} element A selector string to use with `querySelectorAll` on the `document` or a dom
+ * element
  * @returns {module:LiveNodeList~LiveNodeList|module:DomElement~DomElement}
  */
 module.exports = function (element) {

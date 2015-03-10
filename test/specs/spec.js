@@ -313,7 +313,8 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#changed
-			 * @type {Array}
+			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
+			 * native array
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
@@ -330,7 +331,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#added
-			 * @type {Array}
+			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
@@ -347,7 +348,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#removed
-			 * @type {Array}
+			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
@@ -435,6 +436,48 @@ Object.defineProperty(LiveNodeList, 'length', {
 		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
+
+/**
+ * Add an event listener to the LiveNodeList
+ *
+ * @function on
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Add an event listener to the LiveNodeList that will only be called **once**
+ *
+ * @function once
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Removes an event listener from the LiveNodeList
+ *
+ * @function off
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} [handler] a callback function
+ * @instance
+ */
+
+/**
+ * Emit an event.
+ *
+ * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
+ *
+ * @function emit
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {...*} eventData event data passed into the event callbacks
+ * @instance
+ */
 
 smokesignals.convert(LiveNodeList);
 
@@ -534,34 +577,67 @@ var DomQuery = {
 
 module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
+/**
+ * @module domQueries/QueryStrategyFactory
+ */
+
+
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
-	strategies = {};
+	/**
+	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 */
+	Strategies = {};
 
-var filterNodesInDocument = function(nodeArray){
-	return nodeArray.filter(function(node) {
+
+var filterNodesInDocument = function (nodeArray) {
+	return nodeArray.filter(function (node) {
 		return document.documentElement.contains(node);
 	});
 };
 
-// element.querySelectorAll
-strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
+/**
+ * `element.querySelectorAll` strategy
+ *
+ * @function querySelectorAll
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	};
 };
 
-// element.querySelector
-strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
+/**
+ * `element.querySelector` strategy
+ *
+ * @function querySelector
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelector(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
+/**
+ * `element.getElementsByTagName` strategy
+ *
+ * @function getElementsByTagName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} tagName
+ * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
@@ -569,8 +645,16 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
+/**
+ * `element.getElementsByClassName` strategy
+ *
+ * @function getElementsByClassName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} className
+ * @returns {Function} wrapped version of `element.querySelectorAll(className)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
@@ -578,38 +662,28 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	};
 };
 
-/**
- * exports the QueryStrategyFactory
- *
- * @exports domQueries/QueryStrategyFactory
- *
- */
-
 module.exports = {
 
 	/**
 	 * Create a query function used with a dom element
 	 *
-	 * #### Example
-	 *
-	 * ```js
+	 * @example
 	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
-	 *
 	 * query(); // [el1, el2, ...]
-	 * ```
 	 *
 	 * @param {String} strategyType the query type
 	 * @param {HTMLElement} element
 	 * @param {String} selector
-	 * @returns {Function}
+	 * @returns {Function} a wrapped query function for the dom element `element`, query `strategyType` and the selector
+	 * `selector`
 	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
-		//var result = strategies[strategyType](element, selector);
+		//var result = Strategies[strategyType](element, selector);
 		//console.timeEnd("query");
 		//return result;
-		return strategies[strategyType](element, selector);
+		return Strategies[strategyType](element, selector);
 	}
 };
 },{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
@@ -1080,7 +1154,8 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#changed
-			 * @type {Array}
+			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
+			 * native array
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
@@ -1097,7 +1172,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#added
-			 * @type {Array}
+			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
@@ -1114,7 +1189,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#removed
-			 * @type {Array}
+			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
@@ -1202,6 +1277,48 @@ Object.defineProperty(LiveNodeList, 'length', {
 		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
+
+/**
+ * Add an event listener to the LiveNodeList
+ *
+ * @function on
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Add an event listener to the LiveNodeList that will only be called **once**
+ *
+ * @function once
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Removes an event listener from the LiveNodeList
+ *
+ * @function off
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} [handler] a callback function
+ * @instance
+ */
+
+/**
+ * Emit an event.
+ *
+ * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
+ *
+ * @function emit
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {...*} eventData event data passed into the event callbacks
+ * @instance
+ */
 
 smokesignals.convert(LiveNodeList);
 
@@ -1508,34 +1625,67 @@ var DomQuery = {
 
 module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
+/**
+ * @module domQueries/QueryStrategyFactory
+ */
+
+
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
-	strategies = {};
+	/**
+	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 */
+	Strategies = {};
 
-var filterNodesInDocument = function(nodeArray){
-	return nodeArray.filter(function(node) {
+
+var filterNodesInDocument = function (nodeArray) {
+	return nodeArray.filter(function (node) {
 		return document.documentElement.contains(node);
 	});
 };
 
-// element.querySelectorAll
-strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
+/**
+ * `element.querySelectorAll` strategy
+ *
+ * @function querySelectorAll
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	};
 };
 
-// element.querySelector
-strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
+/**
+ * `element.querySelector` strategy
+ *
+ * @function querySelector
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelector(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
+/**
+ * `element.getElementsByTagName` strategy
+ *
+ * @function getElementsByTagName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} tagName
+ * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
@@ -1543,8 +1693,16 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
+/**
+ * `element.getElementsByClassName` strategy
+ *
+ * @function getElementsByClassName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} className
+ * @returns {Function} wrapped version of `element.querySelectorAll(className)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
@@ -1552,38 +1710,28 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	};
 };
 
-/**
- * exports the QueryStrategyFactory
- *
- * @exports domQueries/QueryStrategyFactory
- *
- */
-
 module.exports = {
 
 	/**
 	 * Create a query function used with a dom element
 	 *
-	 * #### Example
-	 *
-	 * ```js
+	 * @example
 	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
-	 *
 	 * query(); // [el1, el2, ...]
-	 * ```
 	 *
 	 * @param {String} strategyType the query type
 	 * @param {HTMLElement} element
 	 * @param {String} selector
-	 * @returns {Function}
+	 * @returns {Function} a wrapped query function for the dom element `element`, query `strategyType` and the selector
+	 * `selector`
 	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
-		//var result = strategies[strategyType](element, selector);
+		//var result = Strategies[strategyType](element, selector);
 		//console.timeEnd("query");
 		//return result;
-		return strategies[strategyType](element, selector);
+		return Strategies[strategyType](element, selector);
 	}
 };
 },{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
@@ -2061,7 +2209,8 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#changed
-			 * @type {Array}
+			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
+			 * native array
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
@@ -2078,7 +2227,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#added
-			 * @type {Array}
+			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
@@ -2095,7 +2244,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#removed
-			 * @type {Array}
+			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
@@ -2183,6 +2332,48 @@ Object.defineProperty(LiveNodeList, 'length', {
 		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
+
+/**
+ * Add an event listener to the LiveNodeList
+ *
+ * @function on
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Add an event listener to the LiveNodeList that will only be called **once**
+ *
+ * @function once
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Removes an event listener from the LiveNodeList
+ *
+ * @function off
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} [handler] a callback function
+ * @instance
+ */
+
+/**
+ * Emit an event.
+ *
+ * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
+ *
+ * @function emit
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {...*} eventData event data passed into the event callbacks
+ * @instance
+ */
 
 smokesignals.convert(LiveNodeList);
 
@@ -2808,34 +2999,67 @@ var DomQuery = {
 
 module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
+/**
+ * @module domQueries/QueryStrategyFactory
+ */
+
+
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
-	strategies = {};
+	/**
+	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 */
+	Strategies = {};
 
-var filterNodesInDocument = function(nodeArray){
-	return nodeArray.filter(function(node) {
+
+var filterNodesInDocument = function (nodeArray) {
+	return nodeArray.filter(function (node) {
 		return document.documentElement.contains(node);
 	});
 };
 
-// element.querySelectorAll
-strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
+/**
+ * `element.querySelectorAll` strategy
+ *
+ * @function querySelectorAll
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	};
 };
 
-// element.querySelector
-strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
+/**
+ * `element.querySelector` strategy
+ *
+ * @function querySelector
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelector(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
+/**
+ * `element.getElementsByTagName` strategy
+ *
+ * @function getElementsByTagName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} tagName
+ * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
@@ -2843,8 +3067,16 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
+/**
+ * `element.getElementsByClassName` strategy
+ *
+ * @function getElementsByClassName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} className
+ * @returns {Function} wrapped version of `element.querySelectorAll(className)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
@@ -2852,38 +3084,28 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	};
 };
 
-/**
- * exports the QueryStrategyFactory
- *
- * @exports domQueries/QueryStrategyFactory
- *
- */
-
 module.exports = {
 
 	/**
 	 * Create a query function used with a dom element
 	 *
-	 * #### Example
-	 *
-	 * ```js
+	 * @example
 	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
-	 *
 	 * query(); // [el1, el2, ...]
-	 * ```
 	 *
 	 * @param {String} strategyType the query type
 	 * @param {HTMLElement} element
 	 * @param {String} selector
-	 * @returns {Function}
+	 * @returns {Function} a wrapped query function for the dom element `element`, query `strategyType` and the selector
+	 * `selector`
 	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
-		//var result = strategies[strategyType](element, selector);
+		//var result = Strategies[strategyType](element, selector);
 		//console.timeEnd("query");
 		//return result;
-		return strategies[strategyType](element, selector);
+		return Strategies[strategyType](element, selector);
 	}
 };
 },{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
@@ -3055,7 +3277,8 @@ var DomElement = require('./DomElement');
  * var foos = watched(document).querySelectorAll('.foo'); // DomElement
  *
  *
- * @param {String|HTMLElement} element
+ * @param {String|HTMLElement} element A selector string to use with `querySelectorAll` on the `document` or a dom
+ * element
  * @returns {module:LiveNodeList~LiveNodeList|module:DomElement~DomElement}
  */
 module.exports = function (element) {
@@ -3178,34 +3401,67 @@ module.exports = {
 },{"./constants":3}]},{},[2])(2)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * @module domQueries/QueryStrategyFactory
+ */
+
+
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
-	strategies = {};
+	/**
+	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 */
+	Strategies = {};
 
-var filterNodesInDocument = function(nodeArray){
-	return nodeArray.filter(function(node) {
+
+var filterNodesInDocument = function (nodeArray) {
+	return nodeArray.filter(function (node) {
 		return document.documentElement.contains(node);
 	});
 };
 
-// element.querySelectorAll
-strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
+/**
+ * `element.querySelectorAll` strategy
+ *
+ * @function querySelectorAll
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) {
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
 	};
 };
 
-// element.querySelector
-strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
+/**
+ * `element.querySelector` strategy
+ *
+ * @function querySelector
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} selector
+ * @returns {Function} wrapped version of `element.querySelector(selector)`
+ */
+Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
+/**
+ * `element.getElementsByTagName` strategy
+ *
+ * @function getElementsByTagName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} tagName
+ * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagName) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
@@ -3213,8 +3469,16 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	};
 };
 
-// element.getElementsByTagName
-strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
+/**
+ * `element.getElementsByClassName` strategy
+ *
+ * @function getElementsByClassName
+ * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @param {HTMLElement} element
+ * @param {String} className
+ * @returns {Function} wrapped version of `element.querySelectorAll(className)`
+ */
+Strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, className) {
 	// a live list, has to be called once, only
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
@@ -3222,38 +3486,28 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	};
 };
 
-/**
- * exports the QueryStrategyFactory
- *
- * @exports domQueries/QueryStrategyFactory
- *
- */
-
 module.exports = {
 
 	/**
 	 * Create a query function used with a dom element
 	 *
-	 * #### Example
-	 *
-	 * ```js
+	 * @example
 	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
-	 *
 	 * query(); // [el1, el2, ...]
-	 * ```
 	 *
 	 * @param {String} strategyType the query type
 	 * @param {HTMLElement} element
 	 * @param {String} selector
-	 * @returns {Function}
+	 * @returns {Function} a wrapped query function for the dom element `element`, query `strategyType` and the selector
+	 * `selector`
 	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
-		//var result = strategies[strategyType](element, selector);
+		//var result = Strategies[strategyType](element, selector);
 		//console.timeEnd("query");
 		//return result;
-		return strategies[strategyType](element, selector);
+		return Strategies[strategyType](element, selector);
 	}
 };
 },{"../util/constants":3,"../util/helper":4}],2:[function(require,module,exports){

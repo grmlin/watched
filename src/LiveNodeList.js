@@ -107,7 +107,8 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#changed
-			 * @type {Array}
+			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
+			 * native array
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
@@ -124,7 +125,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#added
-			 * @type {Array}
+			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
@@ -141,7 +142,7 @@ var LiveNodeList = {
 			 * });
 			 *
 			 * @event module:LiveNodeList~LiveNodeList#removed
-			 * @type {Array}
+			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
@@ -229,6 +230,48 @@ Object.defineProperty(LiveNodeList, 'length', {
 		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
+
+/**
+ * Add an event listener to the LiveNodeList
+ *
+ * @function on
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Add an event listener to the LiveNodeList that will only be called **once**
+ *
+ * @function once
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} handler a callback function
+ * @instance
+ */
+
+/**
+ * Removes an event listener from the LiveNodeList
+ *
+ * @function off
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {function} [handler] a callback function
+ * @instance
+ */
+
+/**
+ * Emit an event.
+ *
+ * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
+ *
+ * @function emit
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @param {string} eventName The name of the event
+ * @param {...*} eventData event data passed into the event callbacks
+ * @instance
+ */
 
 smokesignals.convert(LiveNodeList);
 
