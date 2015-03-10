@@ -1,7 +1,25 @@
 var DomElement = require('./DomElement');
+/**
+ * @module watched
+ */
 
-var watched = function (element) {
-	if (this instanceof watched) {
+/**
+ * Creates a `LiveNodeList` directly or a decorated `HTMLElement` as `DomElement` to get lists with
+ * different queries by yourself.
+ *
+ * Use a selector to get a `LiveNodeList` or an `HTMLElement` for complete control
+ *
+ *
+ * @example
+ * var foos = watched('.foo'); // LiveNodeList
+ * var foos = watched(document).querySelectorAll('.foo'); // DomElement
+ *
+ *
+ * @param {String|HTMLElement} element
+ * @returns {module:LiveNodeList~LiveNodeList|module:DomElement~DomElement}
+ */
+module.exports = function (element) {
+	if (this instanceof module.exports) {
 		throw new Error('watched is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
 
@@ -12,5 +30,3 @@ var watched = function (element) {
 		return DomElement(element);
 	}
 };
-
-module.exports = watched;

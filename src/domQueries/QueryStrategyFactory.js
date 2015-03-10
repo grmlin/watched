@@ -4,7 +4,7 @@ var constants = require('../util/constants'),
 
 var filterNodesInDocument = function(nodeArray){
 	return nodeArray.filter(function(node) {
-		return document.contains(node);
+		return document.documentElement.contains(node);
 	});
 };
 
@@ -13,7 +13,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.querySelector
@@ -21,7 +21,7 @@ strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -30,7 +30,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -39,10 +39,34 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
+/**
+ * exports the QueryStrategyFactory
+ *
+ * @exports domQueries/QueryStrategyFactory
+ *
+ */
+
 module.exports = {
+
+	/**
+	 * Create a query function used with a dom element
+	 *
+	 * #### Example
+	 *
+	 * ```js
+	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
+	 *
+	 * query(); // [el1, el2, ...]
+	 * ```
+	 *
+	 * @param {String} strategyType the query type
+	 * @param {HTMLElement} element
+	 * @param {String} selector
+	 * @returns {Function}
+	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");

@@ -99,27 +99,95 @@ smokesignals = {
 var helper = require('./util/helper'),
 	constants = require('./util/constants'),
 	LiveNodeList = require('./LiveNodeList'),
-	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory'),
-	DomQuery = require('./domQueries/DomQuery');
+	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory');
 
 
+/**
+ * @module DomElement
+ */
+
+
+
+
+/**
+ * Object used as prototype for new DomElement instances.
+ * Should be used as a prototype for new `DomElement` instances
+ *
+ * @namespace module:DomElement~DomElement
+ */
 var DomElement = {
 	__name__: 'DomElement'
 };
 
+/**
+ * Add all available queries to the DomElement's prototype
+ */
 constants.AVAILABLE_QUERIES.forEach(function (queryType) {
-		DomElement[queryType] = function (selector) {
-			// TODO tiny query factory, better do some error handling?
-			var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector),
-				query = Object.create(DomQuery);
+	DomElement[queryType] = function (selector) {
+		// TODO tiny query factory, better do some error handling?
+		var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector);
 
-			query.init(queryStrategy);
-			return LiveNodeList(query);
-		};
+		return LiveNodeList(queryStrategy);
+	};
 });
 
 
+/**
+ * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
+ *
+ * @function querySelectorAll
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
 
+/**
+ * See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will be always
+ * a `LiveNodeList`, not a single element as in the native `querySelector`.
+ *
+ * @function querySelector
+ * @memberof module:DomElement~DomElement
+ * @param element
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+/**
+ * See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than
+ * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByTagName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster
+ * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByClassName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * factory method to create new `DomElement` instances
+ *
+ * @param {HTMLElement} element the HTMLElement used as root for all queries
+ * @returns {module:DomElement~DomElement}
+ * @throws {Error|TypeError}
+ * @example
+ * var DomElement = require('./DomElement');
+ * var domElement = DomElement(document);
+ * var nodeList = domElement.querySelectorAll('.foo');
+ */
 module.exports = function(element){
 	if (this instanceof module.exports) {
 		throw new Error('The DomElement is a factory function, not a constructor. Don\'t use the new keyword with it');
@@ -128,35 +196,84 @@ module.exports = function(element){
 		throw new TypeError('The element to watch has to be a HTMLElement! The type of the given element is ' + typeof element );
 	}
 
-	var domElement = Object.create(DomElement);
-	domElement.el = element;
+	var domElement = Object.create(DomElement, {
+		el : {
+			value: element
+		}
+	});
 	return domElement;
 };
-},{"./LiveNodeList":4,"./domQueries/DomQuery":6,"./domQueries/QueryStrategyFactory":7,"./util/constants":9,"./util/helper":10}],4:[function(require,module,exports){
-var smokesignals     = require('smokesignals'),
-		constants        = require('./util/constants'),
-		helper           = require('./util/helper'),
-		NativeObserver   = require('./observers/NativeObserver'),
-		IntervalObserver = function () {
-		};
+},{"./LiveNodeList":4,"./domQueries/QueryStrategyFactory":7,"./util/constants":10,"./util/helper":11}],4:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+	constants = require('./util/constants'),
+	helper = require('./util/helper'),
+	DomQuery = require('./domQueries/DomQuery'),
+	NativeObserver = require('./observers/NativeObserver'),
+	IntervalObserver = require('./observers/IntervalObserver');
 
 // The one and only local instance of a mutation observer
 var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+mutationObserver.init();
+
+/**
+ * smokesignals event emitter
+ *
+ * @external smokesignals
+ * @namespace external:smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ */
 
 
+/**
+ * @Module LiveNodeList
+ */
+
+
+/**
+ * diffs two arrays, returns the difference
+ *
+ *  diff([1,2],[2,3,4]); //[1]
+ *
+ * @param {Array} target
+ * @param {Array} other
+ * @returns {Array}
+ * @private
+ */
 var diff = function (target, other) {
 	return target.filter(function (element) {
 		return !helper.arrayContains(other, element);
 	});
 };
 
-mutationObserver.init();
 
-// LiveNodeList is an array like object
+/**
+ *
+ * A live list of dom elements, always up to date.
+ *
+ * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
+ * the `LiveNodeList` dispatches event on changes!
+ *
+ * @namespace module:LiveNodeList~LiveNodeList
+ * @mixes smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
+ * `LiveNodeList`.
+ * @fires module:LiveNodeList~LiveNodeList#changed
+ * @fires module:LiveNodeList~LiveNodeList#added
+ * @fires module:LiveNodeList~LiveNodeList#removed
+ */
 var LiveNodeList = {
-
+	/**
+	 * name helper, mainly used for tests
+	 * @private
+	 * @instance
+	 * */
 	__name__: 'LiveNodeList',
 
+	/**
+	 * Initialize the LiveNodeList
+	 * @param {DomQuery} elementQuery
+	 * @instance
+	 */
 	init: function (elementQuery) {
 		this._isActive = false;
 		this._length = 0;
@@ -166,9 +283,9 @@ var LiveNodeList = {
 	},
 
 	_onMutate: function () {
-		var oldElements     = this._query.old(),
-				currentElements = this._query.current(),
-				addedElements, removedElements, wasAdded, wasRemoved;
+		var oldElements = this._query.old(),
+			currentElements = this._query.current(),
+			addedElements, removedElements, wasAdded, wasRemoved;
 
 		// 1. find all the added elements
 		addedElements = diff(currentElements, oldElements);
@@ -183,12 +300,55 @@ var LiveNodeList = {
 		wasRemoved = removedElements.length > 0;
 
 		if (wasAdded || wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 *
+			 * Event called when new elements are added to or removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing all elements currently in the list
+			 *
+			 * @example
+			 * nodeList.on('changed', function(currentElements){
+			 *   console.log(currentElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
 		if (wasAdded) {
+			/**
+			 * LiveNodeList event
+			 * Event called when new elements are added to the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing the newly found dom elements
+			 *
+			 * @example
+			 * nodeList.on('added', function(newElements){
+			 *   console.log(newElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
 		if (wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 * Event called when elements are removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
+			 *
+			 * @example
+			 * nodeList.on('removed', function(removedElements){
+			 *   console.log(removedElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
 
@@ -207,13 +367,46 @@ var LiveNodeList = {
 	_bubble: function (eventType, elementList) {
 		this.emit(eventType, elementList);
 	},
-	forEach: function () {
+
+	/**
+	 * see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+	 *
+	 *
+	 * @example
+	 * nodeList.forEach(function(element){
+	 *   element.style.color = "green";
+	 * });
+	 *
+	 * @param {Function} callback
+	 * @param {Object} [thisArg] optional context object
+	 *
+	 * @instance
+	 * */
+	forEach: function (callback, thisArg) {
 		Array.prototype.forEach.apply(this, arguments);
 	},
+
+	/**
+	 * Freezes the nodelist in it's current form and pauses the dom mutation listener
+	 *
+	 * @instance
+	 * @example
+	 * nodeList.pause();
+	 */
 	pause: function () {
 		this._isActive = false;
 		mutationObserver.off(constants.CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 	},
+
+	/**
+	 * Resume the query and listen to dom mutations again.
+	 * Creating a LiveNodeList will do that initially for you.
+	 *
+	 * @example
+	 * nodelist.resume();
+	 *
+	 * @instance
+	 */
 	resume: function () {
 		if (!this._isActive) {
 			this._isActive = true;
@@ -223,85 +416,92 @@ var LiveNodeList = {
 	}
 };
 
+/**
+ * The length of the node list.
+ *
+ * *you can't set the length, so tricks known to work with the native array won't have any effect here*
+ *
+ * @member length
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @type {number}
+ * @instance
+ */
+
 Object.defineProperty(LiveNodeList, 'length', {
 	get: function () {
 		return this._length;
 	},
-	set: function (value) {
-		// we'll do nothing in here, will be called while using array methods on the nodelist
+	set: function (/*length*/) {
+		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
 
 smokesignals.convert(LiveNodeList);
 
-
-module.exports = function (elementQuery) {
+/**
+ * factory method to create new `LiveNodeList` objects
+ *
+ * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
+module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
 		throw new Error('The LiveNodeList is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
 
-	var nodeList = Object.create(LiveNodeList);
-	nodeList.init(elementQuery);
+	var query = Object.create(DomQuery),
+		nodeList = Object.create(LiveNodeList);
+
+	query.init(queryStrategy);
+	nodeList.init(query);
 	return nodeList;
 };
-},{"./observers/NativeObserver":8,"./util/constants":9,"./util/helper":10,"smokesignals":1}],5:[function(require,module,exports){
+
+
+
+},{"./domQueries/DomQuery":6,"./observers/IntervalObserver":8,"./observers/NativeObserver":9,"./util/constants":10,"./util/helper":11,"smokesignals":1}],5:[function(require,module,exports){
 var DomElement = require('../DomElement');
 
 describe('DomElement', function () {
+	var domElement;
 
-	it('is a factory function, not a constructor', function () {
+	beforeEach(function () {
+		domElement = DomElement(document);
+	});
+
+	it('is factory function', function () {
 		expect(DomElement).to.be.a('function');
 		expect(function () {
 			var domElement = new DomElement(document);
 		}).to.throwError();
-	});
-
-	it('wraps dom elements', function () {
-		//domEl.init(document);
-
 		expect(function () {
 			DomElement('');
 		}).to.throwError();
+	});
 
-		expect(function () {
-			DomElement();
-		}).to.throwError();
-
-		expect(function () {
-			DomElement({});
-		}).to.throwError();
-
-		expect(function () {
-			DomElement('foobar');
-		}).to.throwError();
-
-		expect(DomElement(document)).to.be.an('object');
-		expect(DomElement(document).el).to.equal(document);
+	it('wraps dom elements', function () {
+		expect(domElement).to.be.an('object');
+		expect(domElement.el).to.equal(document);
 	});
 
 	it('creates instances', function () {
-		expect(DomElement(document)).to.not.equal(DomElement(document));
+		var element2 = DomElement(document);
+		expect(element2).to.not.equal(domElement);
 	});
 
 	it('provides query selectors', function () {
-		var el = DomElement(document);
-
-		expect(el.querySelectorAll).to.be.a('function');
-		expect(el.querySelector).to.be.a('function');
-		expect(el.getElementsByTagName).to.be.a('function');
-		expect(el.getElementsByClassName).to.be.a('function');
-
+		expect(domElement.querySelectorAll).to.be.a('function');
+		expect(domElement.querySelector).to.be.a('function');
+		expect(domElement.getElementsByTagName).to.be.a('function');
+		expect(domElement.getElementsByClassName).to.be.a('function');
 	});
 
-	// ------------------
-
-	var element = DomElement(document);
 
 	it('returns LiveNodeLists', function () {
-		expect(element.querySelectorAll('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
-		expect(element.querySelector('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
-		expect(element.getElementsByTagName('script')).to.have.property('__name__', 'LiveNodeList');
-		expect(element.getElementsByClassName('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(domElement.querySelectorAll('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(domElement.querySelector('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(domElement.getElementsByTagName('script')).to.have.property('__name__', 'LiveNodeList');
+		expect(domElement.getElementsByClassName('.dom-element-test')).to.have.property('__name__', 'LiveNodeList');
 	});
 
 
@@ -333,14 +533,14 @@ var DomQuery = {
 };
 
 module.exports = DomQuery;
-},{"../util/helper":10}],7:[function(require,module,exports){
+},{"../util/helper":11}],7:[function(require,module,exports){
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
 var filterNodesInDocument = function(nodeArray){
 	return nodeArray.filter(function(node) {
-		return document.contains(node);
+		return document.documentElement.contains(node);
 	});
 };
 
@@ -349,7 +549,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.querySelector
@@ -357,7 +557,7 @@ strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -366,7 +566,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -375,10 +575,34 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
+/**
+ * exports the QueryStrategyFactory
+ *
+ * @exports domQueries/QueryStrategyFactory
+ *
+ */
+
 module.exports = {
+
+	/**
+	 * Create a query function used with a dom element
+	 *
+	 * #### Example
+	 *
+	 * ```js
+	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
+	 *
+	 * query(); // [el1, el2, ...]
+	 * ```
+	 *
+	 * @param {String} strategyType the query type
+	 * @param {HTMLElement} element
+	 * @param {String} selector
+	 * @returns {Function}
+	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
@@ -388,7 +612,60 @@ module.exports = {
 		return strategies[strategyType](element, selector);
 	}
 };
-},{"../util/constants":9,"../util/helper":10}],8:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+		helper       = require('../util/helper'),
+		constants    = require('../util/constants');
+
+var allElementsLive = document.getElementsByTagName('*'),
+		getAllAsArray   = function () {
+			return helper.nodeListToArray(allElementsLive);
+		},
+		hasChanged      = function (oldElements, newElements) {
+			if (oldElements.length !== newElements.length) {
+				return true;
+			}
+
+			// check if the arrays contain
+			return oldElements.some(function (element, index) {
+				return element !== newElements[index];
+			});
+		};
+
+
+var IntervalObserver = {
+	init: function () {
+		this._currentElements = getAllAsArray();
+		this._initialize();
+	},
+	_initialize: function () {
+		var _this = this,
+				start = function () {
+					setTimeout(tick, constants.INTERVAL_OBSERVER_RESCAN_INTERVAL);
+				},
+				tick  = function () {
+					_this._checkDom();
+					start();
+				};
+
+		start();
+	},
+	_checkDom: function () {
+		var newElements = getAllAsArray();
+		if (hasChanged(this._currentElements, newElements)) {
+			this._currentElements = newElements;
+			this.emit(constants.CUSTOM_EVENT_ON_MUTATION);
+		}
+
+	}
+};
+
+smokesignals.convert(IntervalObserver);
+
+
+module.exports = IntervalObserver;
+
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -417,7 +694,7 @@ var NativeObserver = {
 smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
-},{"../util/constants":9,"../util/helper":10,"smokesignals":1}],9:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
 
 var constants = {
 
@@ -443,7 +720,7 @@ Object.keys(constants.queries).forEach(function(index){
 });
 
 module.exports = constants;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var constants = require('./constants');
 
 var INDEX_OF_FAIL = -1;
@@ -486,7 +763,7 @@ module.exports = {
 		}
 	}
 };
-},{"./constants":9}]},{},[5])(5)
+},{"./constants":10}]},{},[5])(5)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
@@ -589,27 +866,95 @@ smokesignals = {
 var helper = require('./util/helper'),
 	constants = require('./util/constants'),
 	LiveNodeList = require('./LiveNodeList'),
-	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory'),
-	DomQuery = require('./domQueries/DomQuery');
+	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory');
 
 
+/**
+ * @module DomElement
+ */
+
+
+
+
+/**
+ * Object used as prototype for new DomElement instances.
+ * Should be used as a prototype for new `DomElement` instances
+ *
+ * @namespace module:DomElement~DomElement
+ */
 var DomElement = {
 	__name__: 'DomElement'
 };
 
+/**
+ * Add all available queries to the DomElement's prototype
+ */
 constants.AVAILABLE_QUERIES.forEach(function (queryType) {
-		DomElement[queryType] = function (selector) {
-			// TODO tiny query factory, better do some error handling?
-			var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector),
-				query = Object.create(DomQuery);
+	DomElement[queryType] = function (selector) {
+		// TODO tiny query factory, better do some error handling?
+		var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector);
 
-			query.init(queryStrategy);
-			return LiveNodeList(query);
-		};
+		return LiveNodeList(queryStrategy);
+	};
 });
 
 
+/**
+ * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
+ *
+ * @function querySelectorAll
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
 
+/**
+ * See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will be always
+ * a `LiveNodeList`, not a single element as in the native `querySelector`.
+ *
+ * @function querySelector
+ * @memberof module:DomElement~DomElement
+ * @param element
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+/**
+ * See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than
+ * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByTagName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster
+ * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByClassName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * factory method to create new `DomElement` instances
+ *
+ * @param {HTMLElement} element the HTMLElement used as root for all queries
+ * @returns {module:DomElement~DomElement}
+ * @throws {Error|TypeError}
+ * @example
+ * var DomElement = require('./DomElement');
+ * var domElement = DomElement(document);
+ * var nodeList = domElement.querySelectorAll('.foo');
+ */
 module.exports = function(element){
 	if (this instanceof module.exports) {
 		throw new Error('The DomElement is a factory function, not a constructor. Don\'t use the new keyword with it');
@@ -618,35 +963,84 @@ module.exports = function(element){
 		throw new TypeError('The element to watch has to be a HTMLElement! The type of the given element is ' + typeof element );
 	}
 
-	var domElement = Object.create(DomElement);
-	domElement.el = element;
+	var domElement = Object.create(DomElement, {
+		el : {
+			value: element
+		}
+	});
 	return domElement;
 };
-},{"./LiveNodeList":4,"./domQueries/DomQuery":6,"./domQueries/QueryStrategyFactory":7,"./util/constants":9,"./util/helper":10}],4:[function(require,module,exports){
-var smokesignals     = require('smokesignals'),
-		constants        = require('./util/constants'),
-		helper           = require('./util/helper'),
-		NativeObserver   = require('./observers/NativeObserver'),
-		IntervalObserver = function () {
-		};
+},{"./LiveNodeList":4,"./domQueries/QueryStrategyFactory":7,"./util/constants":10,"./util/helper":11}],4:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+	constants = require('./util/constants'),
+	helper = require('./util/helper'),
+	DomQuery = require('./domQueries/DomQuery'),
+	NativeObserver = require('./observers/NativeObserver'),
+	IntervalObserver = require('./observers/IntervalObserver');
 
 // The one and only local instance of a mutation observer
 var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+mutationObserver.init();
+
+/**
+ * smokesignals event emitter
+ *
+ * @external smokesignals
+ * @namespace external:smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ */
 
 
+/**
+ * @Module LiveNodeList
+ */
+
+
+/**
+ * diffs two arrays, returns the difference
+ *
+ *  diff([1,2],[2,3,4]); //[1]
+ *
+ * @param {Array} target
+ * @param {Array} other
+ * @returns {Array}
+ * @private
+ */
 var diff = function (target, other) {
 	return target.filter(function (element) {
 		return !helper.arrayContains(other, element);
 	});
 };
 
-mutationObserver.init();
 
-// LiveNodeList is an array like object
+/**
+ *
+ * A live list of dom elements, always up to date.
+ *
+ * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
+ * the `LiveNodeList` dispatches event on changes!
+ *
+ * @namespace module:LiveNodeList~LiveNodeList
+ * @mixes smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
+ * `LiveNodeList`.
+ * @fires module:LiveNodeList~LiveNodeList#changed
+ * @fires module:LiveNodeList~LiveNodeList#added
+ * @fires module:LiveNodeList~LiveNodeList#removed
+ */
 var LiveNodeList = {
-
+	/**
+	 * name helper, mainly used for tests
+	 * @private
+	 * @instance
+	 * */
 	__name__: 'LiveNodeList',
 
+	/**
+	 * Initialize the LiveNodeList
+	 * @param {DomQuery} elementQuery
+	 * @instance
+	 */
 	init: function (elementQuery) {
 		this._isActive = false;
 		this._length = 0;
@@ -656,9 +1050,9 @@ var LiveNodeList = {
 	},
 
 	_onMutate: function () {
-		var oldElements     = this._query.old(),
-				currentElements = this._query.current(),
-				addedElements, removedElements, wasAdded, wasRemoved;
+		var oldElements = this._query.old(),
+			currentElements = this._query.current(),
+			addedElements, removedElements, wasAdded, wasRemoved;
 
 		// 1. find all the added elements
 		addedElements = diff(currentElements, oldElements);
@@ -673,12 +1067,55 @@ var LiveNodeList = {
 		wasRemoved = removedElements.length > 0;
 
 		if (wasAdded || wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 *
+			 * Event called when new elements are added to or removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing all elements currently in the list
+			 *
+			 * @example
+			 * nodeList.on('changed', function(currentElements){
+			 *   console.log(currentElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
 		if (wasAdded) {
+			/**
+			 * LiveNodeList event
+			 * Event called when new elements are added to the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing the newly found dom elements
+			 *
+			 * @example
+			 * nodeList.on('added', function(newElements){
+			 *   console.log(newElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
 		if (wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 * Event called when elements are removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
+			 *
+			 * @example
+			 * nodeList.on('removed', function(removedElements){
+			 *   console.log(removedElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
 
@@ -697,13 +1134,46 @@ var LiveNodeList = {
 	_bubble: function (eventType, elementList) {
 		this.emit(eventType, elementList);
 	},
-	forEach: function () {
+
+	/**
+	 * see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+	 *
+	 *
+	 * @example
+	 * nodeList.forEach(function(element){
+	 *   element.style.color = "green";
+	 * });
+	 *
+	 * @param {Function} callback
+	 * @param {Object} [thisArg] optional context object
+	 *
+	 * @instance
+	 * */
+	forEach: function (callback, thisArg) {
 		Array.prototype.forEach.apply(this, arguments);
 	},
+
+	/**
+	 * Freezes the nodelist in it's current form and pauses the dom mutation listener
+	 *
+	 * @instance
+	 * @example
+	 * nodeList.pause();
+	 */
 	pause: function () {
 		this._isActive = false;
 		mutationObserver.off(constants.CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 	},
+
+	/**
+	 * Resume the query and listen to dom mutations again.
+	 * Creating a LiveNodeList will do that initially for you.
+	 *
+	 * @example
+	 * nodelist.resume();
+	 *
+	 * @instance
+	 */
 	resume: function () {
 		if (!this._isActive) {
 			this._isActive = true;
@@ -713,28 +1183,50 @@ var LiveNodeList = {
 	}
 };
 
+/**
+ * The length of the node list.
+ *
+ * *you can't set the length, so tricks known to work with the native array won't have any effect here*
+ *
+ * @member length
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @type {number}
+ * @instance
+ */
+
 Object.defineProperty(LiveNodeList, 'length', {
 	get: function () {
 		return this._length;
 	},
-	set: function (value) {
-		// we'll do nothing in here, will be called while using array methods on the nodelist
+	set: function (/*length*/) {
+		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
 
 smokesignals.convert(LiveNodeList);
 
-
-module.exports = function (elementQuery) {
+/**
+ * factory method to create new `LiveNodeList` objects
+ *
+ * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
+module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
 		throw new Error('The LiveNodeList is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
 
-	var nodeList = Object.create(LiveNodeList);
-	nodeList.init(elementQuery);
+	var query = Object.create(DomQuery),
+		nodeList = Object.create(LiveNodeList);
+
+	query.init(queryStrategy);
+	nodeList.init(query);
 	return nodeList;
 };
-},{"./observers/NativeObserver":8,"./util/constants":9,"./util/helper":10,"smokesignals":1}],5:[function(require,module,exports){
+
+
+
+},{"./domQueries/DomQuery":6,"./observers/IntervalObserver":8,"./observers/NativeObserver":9,"./util/constants":10,"./util/helper":11,"smokesignals":1}],5:[function(require,module,exports){
 var LiveNodeList = require('../LiveNodeList');
 var DomElement = require('../DomElement');
 
@@ -742,8 +1234,13 @@ describe('LiveNodeList', function () {
 	this.timeout(5000);
 
 	var CSS_CLASS = "livenodelist-test";
-	var element = DomElement(document);
-	var list = element.querySelectorAll('.' + CSS_CLASS);
+	var element;
+	var list;
+
+	beforeEach(function(){
+		element = DomElement(document);
+		list = element.querySelectorAll('.' + CSS_CLASS);
+	});
 
 	it('has a public interface', function () {
 		expect(list.pause).to.be.a('function');
@@ -790,14 +1287,15 @@ describe('LiveNodeList', function () {
 
 	it('detects dom additions', function (done) {
 		var el = document.createElement('div');
-		el.className = CSS_CLASS;
+		var list2 = element.querySelectorAll('.detects-dom-additions');
+		el.className = 'detects-dom-additions';
 
-		list.on('added', function (newElements) {
+		list2.on('added', function (newElements) {
 			try {
-				expect(list.length).to.equal(1);
+				expect(list2.length).to.equal(1);
 				expect(newElements.length).to.equal(1);
 				expect(newElements[0]).to.equal(el);
-				expect(list[0]).to.equal(el);
+				expect(list2[0]).to.equal(el);
 				done();
 			} catch (e) {
 				done(e);
@@ -810,9 +1308,11 @@ describe('LiveNodeList', function () {
 	});
 
 	it('detects dom deletions', function (done) {
-		var el = document.querySelector('.' + CSS_CLASS);
+		var el = document.createElement('div');
+		var list2 = element.querySelectorAll('.detects-dom-deletions');
+		el.className = 'detects-dom-deletions';
 
-		list.on('removed', function (removedElements) {
+		list2.on('removed', function (removedElements) {
 			try {
 				expect(list.length).to.equal(0);
 				expect(removedElements.length).to.equal(1);
@@ -823,7 +1323,10 @@ describe('LiveNodeList', function () {
 			}
 		});
 
-		el.parentNode.removeChild(el);
+		document.body.appendChild(el);
+		setTimeout(function(){
+			el.parentNode.removeChild(el);
+		}, 150);
 	});
 
 	it('detects dom changes in general', function (done) {
@@ -1004,14 +1507,14 @@ var DomQuery = {
 };
 
 module.exports = DomQuery;
-},{"../util/helper":10}],7:[function(require,module,exports){
+},{"../util/helper":11}],7:[function(require,module,exports){
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
 var filterNodesInDocument = function(nodeArray){
 	return nodeArray.filter(function(node) {
-		return document.contains(node);
+		return document.documentElement.contains(node);
 	});
 };
 
@@ -1020,7 +1523,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.querySelector
@@ -1028,7 +1531,7 @@ strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -1037,7 +1540,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -1046,10 +1549,34 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
+/**
+ * exports the QueryStrategyFactory
+ *
+ * @exports domQueries/QueryStrategyFactory
+ *
+ */
+
 module.exports = {
+
+	/**
+	 * Create a query function used with a dom element
+	 *
+	 * #### Example
+	 *
+	 * ```js
+	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
+	 *
+	 * query(); // [el1, el2, ...]
+	 * ```
+	 *
+	 * @param {String} strategyType the query type
+	 * @param {HTMLElement} element
+	 * @param {String} selector
+	 * @returns {Function}
+	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
@@ -1059,7 +1586,60 @@ module.exports = {
 		return strategies[strategyType](element, selector);
 	}
 };
-},{"../util/constants":9,"../util/helper":10}],8:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+		helper       = require('../util/helper'),
+		constants    = require('../util/constants');
+
+var allElementsLive = document.getElementsByTagName('*'),
+		getAllAsArray   = function () {
+			return helper.nodeListToArray(allElementsLive);
+		},
+		hasChanged      = function (oldElements, newElements) {
+			if (oldElements.length !== newElements.length) {
+				return true;
+			}
+
+			// check if the arrays contain
+			return oldElements.some(function (element, index) {
+				return element !== newElements[index];
+			});
+		};
+
+
+var IntervalObserver = {
+	init: function () {
+		this._currentElements = getAllAsArray();
+		this._initialize();
+	},
+	_initialize: function () {
+		var _this = this,
+				start = function () {
+					setTimeout(tick, constants.INTERVAL_OBSERVER_RESCAN_INTERVAL);
+				},
+				tick  = function () {
+					_this._checkDom();
+					start();
+				};
+
+		start();
+	},
+	_checkDom: function () {
+		var newElements = getAllAsArray();
+		if (hasChanged(this._currentElements, newElements)) {
+			this._currentElements = newElements;
+			this.emit(constants.CUSTOM_EVENT_ON_MUTATION);
+		}
+
+	}
+};
+
+smokesignals.convert(IntervalObserver);
+
+
+module.exports = IntervalObserver;
+
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -1088,7 +1668,7 @@ var NativeObserver = {
 smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
-},{"../util/constants":9,"../util/helper":10,"smokesignals":1}],9:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
 
 var constants = {
 
@@ -1114,7 +1694,7 @@ Object.keys(constants.queries).forEach(function(index){
 });
 
 module.exports = constants;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var constants = require('./constants');
 
 var INDEX_OF_FAIL = -1;
@@ -1157,7 +1737,14 @@ module.exports = {
 		}
 	}
 };
-},{"./constants":9}]},{},[5])(5)
+},{"./constants":10}]},{},[5])(5)
+});
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * Created by aw on 07.03.15.
+ */
+
+},{}]},{},[1])(1)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
@@ -1260,27 +1847,95 @@ smokesignals = {
 var helper = require('./util/helper'),
 	constants = require('./util/constants'),
 	LiveNodeList = require('./LiveNodeList'),
-	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory'),
-	DomQuery = require('./domQueries/DomQuery');
+	QueryStrategyFactory = require('./domQueries/QueryStrategyFactory');
 
 
+/**
+ * @module DomElement
+ */
+
+
+
+
+/**
+ * Object used as prototype for new DomElement instances.
+ * Should be used as a prototype for new `DomElement` instances
+ *
+ * @namespace module:DomElement~DomElement
+ */
 var DomElement = {
 	__name__: 'DomElement'
 };
 
+/**
+ * Add all available queries to the DomElement's prototype
+ */
 constants.AVAILABLE_QUERIES.forEach(function (queryType) {
-		DomElement[queryType] = function (selector) {
-			// TODO tiny query factory, better do some error handling?
-			var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector),
-				query = Object.create(DomQuery);
+	DomElement[queryType] = function (selector) {
+		// TODO tiny query factory, better do some error handling?
+		var queryStrategy = QueryStrategyFactory.create(queryType, this.el, selector);
 
-			query.init(queryStrategy);
-			return LiveNodeList(query);
-		};
+		return LiveNodeList(queryStrategy);
+	};
 });
 
 
+/**
+ * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
+ *
+ * @function querySelectorAll
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
 
+/**
+ * See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will be always
+ * a `LiveNodeList`, not a single element as in the native `querySelector`.
+ *
+ * @function querySelector
+ * @memberof module:DomElement~DomElement
+ * @param element
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+/**
+ * See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than
+ * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByTagName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster
+ * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ *
+ * @function getElementsByClassName
+ * @memberof module:DomElement~DomElement
+ * @param {String} selector
+ * @instance
+ * @returns {module:LiveNodeList}
+ */
+
+
+/**
+ * factory method to create new `DomElement` instances
+ *
+ * @param {HTMLElement} element the HTMLElement used as root for all queries
+ * @returns {module:DomElement~DomElement}
+ * @throws {Error|TypeError}
+ * @example
+ * var DomElement = require('./DomElement');
+ * var domElement = DomElement(document);
+ * var nodeList = domElement.querySelectorAll('.foo');
+ */
 module.exports = function(element){
 	if (this instanceof module.exports) {
 		throw new Error('The DomElement is a factory function, not a constructor. Don\'t use the new keyword with it');
@@ -1289,35 +1944,84 @@ module.exports = function(element){
 		throw new TypeError('The element to watch has to be a HTMLElement! The type of the given element is ' + typeof element );
 	}
 
-	var domElement = Object.create(DomElement);
-	domElement.el = element;
+	var domElement = Object.create(DomElement, {
+		el : {
+			value: element
+		}
+	});
 	return domElement;
 };
-},{"./LiveNodeList":4,"./domQueries/DomQuery":6,"./domQueries/QueryStrategyFactory":7,"./util/constants":9,"./util/helper":10}],4:[function(require,module,exports){
-var smokesignals     = require('smokesignals'),
-		constants        = require('./util/constants'),
-		helper           = require('./util/helper'),
-		NativeObserver   = require('./observers/NativeObserver'),
-		IntervalObserver = function () {
-		};
+},{"./LiveNodeList":4,"./domQueries/QueryStrategyFactory":7,"./util/constants":10,"./util/helper":11}],4:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+	constants = require('./util/constants'),
+	helper = require('./util/helper'),
+	DomQuery = require('./domQueries/DomQuery'),
+	NativeObserver = require('./observers/NativeObserver'),
+	IntervalObserver = require('./observers/IntervalObserver');
 
 // The one and only local instance of a mutation observer
 var mutationObserver = Object.create(helper.hasMutationObserver ? NativeObserver : IntervalObserver);
+mutationObserver.init();
+
+/**
+ * smokesignals event emitter
+ *
+ * @external smokesignals
+ * @namespace external:smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ */
 
 
+/**
+ * @Module LiveNodeList
+ */
+
+
+/**
+ * diffs two arrays, returns the difference
+ *
+ *  diff([1,2],[2,3,4]); //[1]
+ *
+ * @param {Array} target
+ * @param {Array} other
+ * @returns {Array}
+ * @private
+ */
 var diff = function (target, other) {
 	return target.filter(function (element) {
 		return !helper.arrayContains(other, element);
 	});
 };
 
-mutationObserver.init();
 
-// LiveNodeList is an array like object
+/**
+ *
+ * A live list of dom elements, always up to date.
+ *
+ * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
+ * the `LiveNodeList` dispatches event on changes!
+ *
+ * @namespace module:LiveNodeList~LiveNodeList
+ * @mixes smokesignals
+ * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
+ * `LiveNodeList`.
+ * @fires module:LiveNodeList~LiveNodeList#changed
+ * @fires module:LiveNodeList~LiveNodeList#added
+ * @fires module:LiveNodeList~LiveNodeList#removed
+ */
 var LiveNodeList = {
-
+	/**
+	 * name helper, mainly used for tests
+	 * @private
+	 * @instance
+	 * */
 	__name__: 'LiveNodeList',
 
+	/**
+	 * Initialize the LiveNodeList
+	 * @param {DomQuery} elementQuery
+	 * @instance
+	 */
 	init: function (elementQuery) {
 		this._isActive = false;
 		this._length = 0;
@@ -1327,9 +2031,9 @@ var LiveNodeList = {
 	},
 
 	_onMutate: function () {
-		var oldElements     = this._query.old(),
-				currentElements = this._query.current(),
-				addedElements, removedElements, wasAdded, wasRemoved;
+		var oldElements = this._query.old(),
+			currentElements = this._query.current(),
+			addedElements, removedElements, wasAdded, wasRemoved;
 
 		// 1. find all the added elements
 		addedElements = diff(currentElements, oldElements);
@@ -1344,12 +2048,55 @@ var LiveNodeList = {
 		wasRemoved = removedElements.length > 0;
 
 		if (wasAdded || wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 *
+			 * Event called when new elements are added to or removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing all elements currently in the list
+			 *
+			 * @example
+			 * nodeList.on('changed', function(currentElements){
+			 *   console.log(currentElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_CHANGED, currentElements);
 		}
 		if (wasAdded) {
+			/**
+			 * LiveNodeList event
+			 * Event called when new elements are added to the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array containing the newly found dom elements
+			 *
+			 * @example
+			 * nodeList.on('added', function(newElements){
+			 *   console.log(newElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
 		}
 		if (wasRemoved) {
+			/**
+			 * LiveNodeList event
+			 * Event called when elements are removed from the dom
+			 *
+			 * The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
+			 *
+			 * @example
+			 * nodeList.on('removed', function(removedElements){
+			 *   console.log(removedElements);
+			 * });
+			 *
+			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @type {Array}
+			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
 		}
 
@@ -1368,13 +2115,46 @@ var LiveNodeList = {
 	_bubble: function (eventType, elementList) {
 		this.emit(eventType, elementList);
 	},
-	forEach: function () {
+
+	/**
+	 * see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+	 *
+	 *
+	 * @example
+	 * nodeList.forEach(function(element){
+	 *   element.style.color = "green";
+	 * });
+	 *
+	 * @param {Function} callback
+	 * @param {Object} [thisArg] optional context object
+	 *
+	 * @instance
+	 * */
+	forEach: function (callback, thisArg) {
 		Array.prototype.forEach.apply(this, arguments);
 	},
+
+	/**
+	 * Freezes the nodelist in it's current form and pauses the dom mutation listener
+	 *
+	 * @instance
+	 * @example
+	 * nodeList.pause();
+	 */
 	pause: function () {
 		this._isActive = false;
 		mutationObserver.off(constants.CUSTOM_EVENT_ON_MUTATION, this._onMutateHandler);
 	},
+
+	/**
+	 * Resume the query and listen to dom mutations again.
+	 * Creating a LiveNodeList will do that initially for you.
+	 *
+	 * @example
+	 * nodelist.resume();
+	 *
+	 * @instance
+	 */
 	resume: function () {
 		if (!this._isActive) {
 			this._isActive = true;
@@ -1384,28 +2164,50 @@ var LiveNodeList = {
 	}
 };
 
+/**
+ * The length of the node list.
+ *
+ * *you can't set the length, so tricks known to work with the native array won't have any effect here*
+ *
+ * @member length
+ * @memberof module:LiveNodeList~LiveNodeList
+ * @type {number}
+ * @instance
+ */
+
 Object.defineProperty(LiveNodeList, 'length', {
 	get: function () {
 		return this._length;
 	},
-	set: function (value) {
-		// we'll do nothing in here, will be called while using array methods on the nodelist
+	set: function (/*length*/) {
+		// Don't delete this one. `Array.prototype.slice.call(this, 0)` may call this setter
 	}
 });
 
 smokesignals.convert(LiveNodeList);
 
-
-module.exports = function (elementQuery) {
+/**
+ * factory method to create new `LiveNodeList` objects
+ *
+ * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
+ * @returns {module:LiveNodeList~LiveNodeList}
+ */
+module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
 		throw new Error('The LiveNodeList is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
 
-	var nodeList = Object.create(LiveNodeList);
-	nodeList.init(elementQuery);
+	var query = Object.create(DomQuery),
+		nodeList = Object.create(LiveNodeList);
+
+	query.init(queryStrategy);
+	nodeList.init(query);
 	return nodeList;
 };
-},{"./observers/NativeObserver":8,"./util/constants":9,"./util/helper":10,"smokesignals":1}],5:[function(require,module,exports){
+
+
+
+},{"./domQueries/DomQuery":6,"./observers/IntervalObserver":8,"./observers/NativeObserver":9,"./util/constants":10,"./util/helper":11,"smokesignals":1}],5:[function(require,module,exports){
 var watched = require('../watched');
 
 describe('watched: public method', function () {
@@ -1418,9 +2220,8 @@ describe('watched: public method', function () {
 	});
 
 	it('the factory creates DomElement and LiveNodeList instances', function () {
-		expect(watched(document)).to.have.property('__name__', 'DomElement');
-		;
 		expect(watched('.dom-element-quick-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(watched(document)).to.have.property('__name__', 'DomElement');
 		expect(function () {
 			watched({});
 		}).to.throwError();
@@ -1986,7 +2787,7 @@ describe('watched: elements can be removed and added again', function () {
 		wrapper.appendChild(inside2);
 	});
 });
-},{"../watched":11}],6:[function(require,module,exports){
+},{"../watched":12}],6:[function(require,module,exports){
 var helper = require('../util/helper');
 
 var DomQuery = {
@@ -2006,14 +2807,14 @@ var DomQuery = {
 };
 
 module.exports = DomQuery;
-},{"../util/helper":10}],7:[function(require,module,exports){
+},{"../util/helper":11}],7:[function(require,module,exports){
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	strategies = {};
 
 var filterNodesInDocument = function(nodeArray){
 	return nodeArray.filter(function(node) {
-		return document.contains(node);
+		return document.documentElement.contains(node);
 	});
 };
 
@@ -2022,7 +2823,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.querySelector
@@ -2030,7 +2831,7 @@ strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -2039,7 +2840,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -2048,10 +2849,34 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
+/**
+ * exports the QueryStrategyFactory
+ *
+ * @exports domQueries/QueryStrategyFactory
+ *
+ */
+
 module.exports = {
+
+	/**
+	 * Create a query function used with a dom element
+	 *
+	 * #### Example
+	 *
+	 * ```js
+	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
+	 *
+	 * query(); // [el1, el2, ...]
+	 * ```
+	 *
+	 * @param {String} strategyType the query type
+	 * @param {HTMLElement} element
+	 * @param {String} selector
+	 * @returns {Function}
+	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");
@@ -2061,7 +2886,60 @@ module.exports = {
 		return strategies[strategyType](element, selector);
 	}
 };
-},{"../util/constants":9,"../util/helper":10}],8:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11}],8:[function(require,module,exports){
+var smokesignals = require('smokesignals'),
+		helper       = require('../util/helper'),
+		constants    = require('../util/constants');
+
+var allElementsLive = document.getElementsByTagName('*'),
+		getAllAsArray   = function () {
+			return helper.nodeListToArray(allElementsLive);
+		},
+		hasChanged      = function (oldElements, newElements) {
+			if (oldElements.length !== newElements.length) {
+				return true;
+			}
+
+			// check if the arrays contain
+			return oldElements.some(function (element, index) {
+				return element !== newElements[index];
+			});
+		};
+
+
+var IntervalObserver = {
+	init: function () {
+		this._currentElements = getAllAsArray();
+		this._initialize();
+	},
+	_initialize: function () {
+		var _this = this,
+				start = function () {
+					setTimeout(tick, constants.INTERVAL_OBSERVER_RESCAN_INTERVAL);
+				},
+				tick  = function () {
+					_this._checkDom();
+					start();
+				};
+
+		start();
+	},
+	_checkDom: function () {
+		var newElements = getAllAsArray();
+		if (hasChanged(this._currentElements, newElements)) {
+			this._currentElements = newElements;
+			this.emit(constants.CUSTOM_EVENT_ON_MUTATION);
+		}
+
+	}
+};
+
+smokesignals.convert(IntervalObserver);
+
+
+module.exports = IntervalObserver;
+
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -2090,7 +2968,7 @@ var NativeObserver = {
 smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
-},{"../util/constants":9,"../util/helper":10,"smokesignals":1}],9:[function(require,module,exports){
+},{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
 
 var constants = {
 
@@ -2116,7 +2994,7 @@ Object.keys(constants.queries).forEach(function(index){
 });
 
 module.exports = constants;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var constants = require('./constants');
 
 var INDEX_OF_FAIL = -1;
@@ -2159,11 +3037,29 @@ module.exports = {
 		}
 	}
 };
-},{"./constants":9}],11:[function(require,module,exports){
+},{"./constants":10}],12:[function(require,module,exports){
 var DomElement = require('./DomElement');
+/**
+ * @module watched
+ */
 
-var watched = function (element) {
-	if (this instanceof watched) {
+/**
+ * Creates a `LiveNodeList` directly or a decorated `HTMLElement` as `DomElement` to get lists with
+ * different queries by yourself.
+ *
+ * Use a selector to get a `LiveNodeList` or an `HTMLElement` for complete control
+ *
+ *
+ * @example
+ * var foos = watched('.foo'); // LiveNodeList
+ * var foos = watched(document).querySelectorAll('.foo'); // DomElement
+ *
+ *
+ * @param {String|HTMLElement} element
+ * @returns {module:LiveNodeList~LiveNodeList|module:DomElement~DomElement}
+ */
+module.exports = function (element) {
+	if (this instanceof module.exports) {
 		throw new Error('watched is a factory function, not a constructor. Don\'t use the new keyword with it');
 	}
 
@@ -2174,8 +3070,6 @@ var watched = function (element) {
 		return DomElement(element);
 	}
 };
-
-module.exports = watched;
 },{"./DomElement":3}]},{},[5])(5)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -2290,7 +3184,7 @@ var constants = require('../util/constants'),
 
 var filterNodesInDocument = function(nodeArray){
 	return nodeArray.filter(function(node) {
-		return document.contains(node);
+		return document.documentElement.contains(node);
 	});
 };
 
@@ -2299,7 +3193,7 @@ strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
 	return function () {
 		var nodeList = element[constants.queries.QUERY_SELECTOR_ALL](selector);
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.querySelector
@@ -2307,7 +3201,7 @@ strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
 	return function () {
 		var node = element[constants.queries.QUERY_SELECTOR](selector);
 		return filterNodesInDocument(node === null ? [] : [node]);
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -2316,7 +3210,7 @@ strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_TAG_NAME](tagName);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
 // element.getElementsByTagName
@@ -2325,10 +3219,34 @@ strategies[constants.queries.GET_ELEMENTS_BY_CLASS_NAME] = function (element, cl
 	var nodeList = element[constants.queries.GET_ELEMENTS_BY_CLASS_NAME](className);
 	return function () {
 		return filterNodesInDocument(helper.nodeListToArray(nodeList));
-	}
+	};
 };
 
+/**
+ * exports the QueryStrategyFactory
+ *
+ * @exports domQueries/QueryStrategyFactory
+ *
+ */
+
 module.exports = {
+
+	/**
+	 * Create a query function used with a dom element
+	 *
+	 * #### Example
+	 *
+	 * ```js
+	 * var query = QueryStrategyFactory.create('querySelectorAll', document, '.foo');
+	 *
+	 * query(); // [el1, el2, ...]
+	 * ```
+	 *
+	 * @param {String} strategyType the query type
+	 * @param {HTMLElement} element
+	 * @param {String} selector
+	 * @returns {Function}
+	 */
 	create: function (strategyType, element, selector) {
 		//console.time("query");
 		//console.log("executing query: ", strategyType + "("+selector+")");

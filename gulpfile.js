@@ -4,10 +4,11 @@ var concat = require('gulp-concat');
 var rename = require("gulp-rename");
 var gzip = require("gulp-gzip");
 var connect = require('gulp-connect');
-var include = require('gulp-include');
 var sizereport = require('gulp-sizereport');
 var wrap = require("gulp-wrap");
 var version = require('./package.json').version;
+var pkg = require('./package.json');
+var jsdoc = require("gulp-jsdoc");
 
 var browserify = require('browserify');
 var transform = require('vinyl-transform');
@@ -46,7 +47,7 @@ gulp.task('connect', function () {
 	connect.server({
 		root: ['test'],
 		port: 8000,
-		livereload: true
+		livereload: false
 	})();
 });
 
@@ -90,7 +91,7 @@ gulp.task("reload", function () {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(['src/**/*'], ['scriptsTest', 'reload']);
+	gulp.watch(['src/**/*'], ['scriptsTest', 'reload', 'doc']);
 });
 
 gulp.task('sizereport', function () {
@@ -100,5 +101,74 @@ gulp.task('sizereport', function () {
 		}));
 });
 
-gulp.task('default', ['connect', 'scriptsTest', 'watch']);
+//gulp.task("doc", function(){
+//	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}'])
+//		.pipe(markdox())
+//		.pipe(rename({
+//			extname: ".md"
+//		}))
+//		.pipe(gulp.dest("./doc"));
+//});
+
+gulp.task("docsss", function () {
+	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}'])
+		.pipe(jsdoc2md({
+			private: false
+		}))
+		.on("error", function (err) {
+			gutil.log(gutil.colors.red("jsdoc2md failed"), err.message)
+		})
+		.pipe(rename({
+			extname: ".md"
+		}))
+		.pipe(gulp.dest("./doc"));
+});
+
+var opts = {
+	showPrivate: true,
+	monospaceLinks: true,
+	cleverLinks: true,
+	outputSourceFiles: true
+};
+
+var tpl = {
+	path: 'ink-docstrap',
+	systemName: pkg.name,
+	footer: 'Generated with gulp',
+	copyright: 'Copyright WebItUp 2014',
+	navType: 'vertical',
+	theme: 'spacelab',
+	linenums: true,
+	collapseSymbols: false,
+	inverseNav: false
+};
+
+gulp.task("doc", function () {
+	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}', "README.md"])
+		.pipe(jsdoc.parser({
+			plugins: ['plugins/markdown']
+			//name: pkg.name,
+//			description: pkg.description,
+			//		version: pkg.version,
+			//licenses: pkg.licenses || [pkg.license],
+		}))
+		// Then generate the documentation and
+		.pipe(jsdoc.generator('./doc/', tpl, {
+			'private': false,
+			monospaceLinks: false,
+			cleverLinks: false,
+			outputSourceFiles: true
+		}));
+});
+
+//gulp.task('doc', function(){
+//	['', 'domQueries', 'observers', 'util'].forEach(function(path){
+//		jsdox.generateForDir('src/'+ path, 'doc/', undefined, function(){
+//
+//		});
+//	});
+//
+//});
+
+gulp.task('default', ['connect', 'scriptsTest', 'doc', 'watch']);
 gulp.task('build', ['uglify', 'sizereport']);

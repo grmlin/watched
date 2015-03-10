@@ -10,9 +10,8 @@ describe('watched: public method', function () {
 	});
 
 	it('the factory creates DomElement and LiveNodeList instances', function () {
-		expect(watched(document)).to.have.property('__name__', 'DomElement');
-		;
 		expect(watched('.dom-element-quick-test')).to.have.property('__name__', 'LiveNodeList');
+		expect(watched(document)).to.have.property('__name__', 'DomElement');
 		expect(function () {
 			watched({});
 		}).to.throwError();

@@ -5,8 +5,13 @@ describe('LiveNodeList', function () {
 	this.timeout(5000);
 
 	var CSS_CLASS = "livenodelist-test";
-	var element = DomElement(document);
-	var list = element.querySelectorAll('.' + CSS_CLASS);
+	var element;
+	var list;
+
+	beforeEach(function(){
+		element = DomElement(document);
+		list = element.querySelectorAll('.' + CSS_CLASS);
+	});
 
 	it('has a public interface', function () {
 		expect(list.pause).to.be.a('function');
@@ -53,14 +58,15 @@ describe('LiveNodeList', function () {
 
 	it('detects dom additions', function (done) {
 		var el = document.createElement('div');
-		el.className = CSS_CLASS;
+		var list2 = element.querySelectorAll('.detects-dom-additions');
+		el.className = 'detects-dom-additions';
 
-		list.on('added', function (newElements) {
+		list2.on('added', function (newElements) {
 			try {
-				expect(list.length).to.equal(1);
+				expect(list2.length).to.equal(1);
 				expect(newElements.length).to.equal(1);
 				expect(newElements[0]).to.equal(el);
-				expect(list[0]).to.equal(el);
+				expect(list2[0]).to.equal(el);
 				done();
 			} catch (e) {
 				done(e);
@@ -73,9 +79,11 @@ describe('LiveNodeList', function () {
 	});
 
 	it('detects dom deletions', function (done) {
-		var el = document.querySelector('.' + CSS_CLASS);
+		var el = document.createElement('div');
+		var list2 = element.querySelectorAll('.detects-dom-deletions');
+		el.className = 'detects-dom-deletions';
 
-		list.on('removed', function (removedElements) {
+		list2.on('removed', function (removedElements) {
 			try {
 				expect(list.length).to.equal(0);
 				expect(removedElements.length).to.equal(1);
@@ -86,7 +94,10 @@ describe('LiveNodeList', function () {
 			}
 		});
 
-		el.parentNode.removeChild(el);
+		document.body.appendChild(el);
+		setTimeout(function(){
+			el.parentNode.removeChild(el);
+		}, 150);
 	});
 
 	it('detects dom changes in general', function (done) {
