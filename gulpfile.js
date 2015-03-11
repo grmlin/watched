@@ -62,7 +62,7 @@ gulp.task('uglify', function () {
 		return b.bundle();
 	});
 
-	return gulp.src('src/watched.js')
+	return gulp.src('watched.js')
 		.pipe(browserified)
 		.pipe(wrap({src: 'build/licenseHeader.tpl'}, {version: version}, {variable: 'data'}))
 		.pipe(gulp.dest('./dist'))
@@ -101,29 +101,6 @@ gulp.task('sizereport', function () {
 		}));
 });
 
-//gulp.task("doc", function(){
-//	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}'])
-//		.pipe(markdox())
-//		.pipe(rename({
-//			extname: ".md"
-//		}))
-//		.pipe(gulp.dest("./doc"));
-//});
-
-gulp.task("docsss", function () {
-	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}'])
-		.pipe(jsdoc2md({
-			private: false
-		}))
-		.on("error", function (err) {
-			gutil.log(gutil.colors.red("jsdoc2md failed"), err.message)
-		})
-		.pipe(rename({
-			extname: ".md"
-		}))
-		.pipe(gulp.dest("./doc"));
-});
-
 var opts = {
 	showPrivate: true,
 	monospaceLinks: true,
@@ -132,7 +109,7 @@ var opts = {
 };
 
 var tpl = {
-		path: 'ink-docstrap',
+	path: 'ink-docstrap',
 	systemName: pkg.name,
 	footer: 'Generated with gulp',
 	copyright: 'Copyright WebItUp 2014',
@@ -146,11 +123,11 @@ var tpl = {
 gulp.task("doc", function () {
 	return gulp.src([".index.js", "./src/**/*.js", '!./src/**/{__tests__,__tests__/**}', "README.md"])
 		.pipe(jsdoc.parser({
-			plugins: ['plugins/markdown']
-			//name: pkg.name,
-//			description: pkg.description,
-			//		version: pkg.version,
-			//licenses: pkg.licenses || [pkg.license],
+			plugins: ['plugins/markdown'],
+			name: pkg.name,
+			description: pkg.description,
+			version: pkg.version,
+			licenses: pkg.licenses || [pkg.license],
 		}))
 		// Then generate the documentation and
 		.pipe(jsdoc.generator('./doc/', tpl, {
@@ -160,15 +137,6 @@ gulp.task("doc", function () {
 			outputSourceFiles: true
 		}));
 });
-
-//gulp.task('doc', function(){
-//	['', 'domQueries', 'observers', 'util'].forEach(function(path){
-//		jsdox.generateForDir('src/'+ path, 'doc/', undefined, function(){
-//
-//		});
-//	});
-//
-//});
 
 gulp.task('default', ['connect', 'scriptsTest', 'doc', 'watch']);
 gulp.task('build', ['uglify', 'sizereport']);
