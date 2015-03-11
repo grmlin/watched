@@ -4,7 +4,6 @@ watched.js
 Live, event driven dom element collections 
 
 ```
-// or changed in general
 watched('.foo').on('changed', function(currentElements){
 	console.log(currentElements);
 });
