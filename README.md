@@ -26,7 +26,7 @@ watched('.foo').on('changed', function(currentElements){
    
 ### Download 
 
-Download and use build in `/dist`
+[Download the latest release](https://github.com/grmlin/watched/releases) and use build in `/dist`
 
 ## Usage
 
