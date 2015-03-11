@@ -1,3 +1,8 @@
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 

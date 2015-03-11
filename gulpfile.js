@@ -132,7 +132,7 @@ var opts = {
 };
 
 var tpl = {
-	path: 'ink-docstrap',
+		path: 'ink-docstrap',
 	systemName: pkg.name,
 	footer: 'Generated with gulp',
 	copyright: 'Copyright WebItUp 2014',
@@ -144,7 +144,7 @@ var tpl = {
 };
 
 gulp.task("doc", function () {
-	return gulp.src(["./src/**/*.js", '!./src/**/{__tests__,__tests__/**}', "README.md"])
+	return gulp.src([".index.js", "./src/**/*.js", '!./src/**/{__tests__,__tests__/**}', "README.md"])
 		.pipe(jsdoc.parser({
 			plugins: ['plugins/markdown']
 			//name: pkg.name,

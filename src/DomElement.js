@@ -5,7 +5,7 @@ var helper = require('./util/helper'),
 
 
 /**
- * @module DomElement
+ * @module watched/DomElement
  */
 
 
@@ -15,7 +15,7 @@ var helper = require('./util/helper'),
  * Object used as prototype for new DomElement instances.
  * Should be used as a prototype for new `DomElement` instances
  *
- * @namespace module:DomElement~DomElement
+ * @namespace module:watched/DomElement~DomElement
  */
 var DomElement = {
 	__name__: 'DomElement'
@@ -38,10 +38,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
  *
  * @function querySelectorAll
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -49,10 +49,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * a `LiveNodeList`, not a single element as in the native `querySelector`.
  *
  * @function querySelector
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param element
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -60,10 +60,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByTagName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -72,10 +72,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByClassName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -83,7 +83,7 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * factory method to create new `DomElement` instances
  *
  * @param {HTMLElement} element the HTMLElement used as root for all queries
- * @returns {module:DomElement~DomElement}
+ * @returns {module:watched/DomElement~DomElement}
  * @throws {Error|TypeError}
  * @example
  * var DomElement = require('./DomElement');

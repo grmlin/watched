@@ -3,7 +3,15 @@ watched.js
 
 Live, event driven dom element collections 
 
-- [Website](http://grmlin.github.io/watched/)
+```
+// or changed in general
+watched('.foo').on('changed', function(currentElements){
+	console.log(currentElements);
+});
+```
+
+
+- [Website/Documentation](http://grmlin.github.io/watched/)
 - [Demo](http://grmlin.github.io/watched/demo.html)
 
 ## Installation
@@ -19,9 +27,11 @@ Live, event driven dom element collections
    
 ### Download 
 
-Download from `/dist`
+Download and use build in `/dist`
 
-## Load
+## Usage
+
+### Load
 
 Node/Browserify
 
@@ -35,8 +45,7 @@ AMD
 
 *TODO*
 
-
-## Usage
+### watch
 
 **The watched nodelists only contain elements that are part of the visual dom**. So if you remove 
 the parent element of, or the watched element itself, the nodelist will be empty.  
@@ -80,8 +89,9 @@ nodeList.on('changed', function(currentElements){
 });
 ```
 
-## Getting started
-Include the latest build you can find inside the `dist` folder in your html.
+### Documentation
+
+You can see the full API docs here: http://grmlin.github.io/watched/
 
 ## How?
 

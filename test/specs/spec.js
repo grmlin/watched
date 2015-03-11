@@ -103,7 +103,7 @@ var helper = require('./util/helper'),
 
 
 /**
- * @module DomElement
+ * @module watched/DomElement
  */
 
 
@@ -113,7 +113,7 @@ var helper = require('./util/helper'),
  * Object used as prototype for new DomElement instances.
  * Should be used as a prototype for new `DomElement` instances
  *
- * @namespace module:DomElement~DomElement
+ * @namespace module:watched/DomElement~DomElement
  */
 var DomElement = {
 	__name__: 'DomElement'
@@ -136,10 +136,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
  *
  * @function querySelectorAll
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -147,10 +147,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * a `LiveNodeList`, not a single element as in the native `querySelector`.
  *
  * @function querySelector
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param element
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -158,10 +158,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByTagName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -170,10 +170,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByClassName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -181,7 +181,7 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * factory method to create new `DomElement` instances
  *
  * @param {HTMLElement} element the HTMLElement used as root for all queries
- * @returns {module:DomElement~DomElement}
+ * @returns {module:watched/DomElement~DomElement}
  * @throws {Error|TypeError}
  * @example
  * var DomElement = require('./DomElement');
@@ -218,14 +218,13 @@ mutationObserver.init();
 /**
  * smokesignals event emitter
  *
- * @external smokesignals
- * @namespace external:smokesignals
- * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ * @external {smokesignals}
+ * @see https://bitbucket.org/bentomas/smokesignals.js
  */
 
 
 /**
- * @Module LiveNodeList
+ * @Module watched/LiveNodeList
  */
 
 
@@ -253,13 +252,13 @@ var diff = function (target, other) {
  * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
  * the `LiveNodeList` dispatches event on changes!
  *
- * @namespace module:LiveNodeList~LiveNodeList
- * @mixes smokesignals
+ * @namespace module:watched/LiveNodeList~LiveNodeList
+ * @mixes external:smokesignals
  * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
  * `LiveNodeList`.
- * @fires module:LiveNodeList~LiveNodeList#changed
- * @fires module:LiveNodeList~LiveNodeList#added
- * @fires module:LiveNodeList~LiveNodeList#removed
+ * @fires module:watched/LiveNodeList~LiveNodeList#changed
+ * @fires module:watched/LiveNodeList~LiveNodeList#added
+ * @fires module:watched/LiveNodeList~LiveNodeList#removed
  */
 var LiveNodeList = {
 	/**
@@ -312,7 +311,7 @@ var LiveNodeList = {
 			 *   console.log(currentElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @event module:watched/LiveNodeList~LiveNodeList#changed
 			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
 			 * native array
 			 */
@@ -330,7 +329,7 @@ var LiveNodeList = {
 			 *   console.log(newElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @event module:watched/LiveNodeList~LiveNodeList#added
 			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
@@ -347,7 +346,7 @@ var LiveNodeList = {
 			 *   console.log(removedElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @event module:watched/LiveNodeList~LiveNodeList#removed
 			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
@@ -423,7 +422,7 @@ var LiveNodeList = {
  * *you can't set the length, so tricks known to work with the native array won't have any effect here*
  *
  * @member length
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @type {number}
  * @instance
  */
@@ -441,7 +440,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList
  *
  * @function on
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -451,7 +450,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList that will only be called **once**
  *
  * @function once
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -461,7 +460,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Removes an event listener from the LiveNodeList
  *
  * @function off
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} [handler] a callback function
  * @instance
@@ -473,7 +472,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
  *
  * @function emit
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {...*} eventData event data passed into the event callbacks
  * @instance
@@ -485,7 +484,7 @@ smokesignals.convert(LiveNodeList);
  * factory method to create new `LiveNodeList` objects
  *
  * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
@@ -559,33 +558,55 @@ describe('DomElement', function () {
 },{"../DomElement":3}],6:[function(require,module,exports){
 var helper = require('../util/helper');
 
-var DomQuery = {
+/**
+ * A DomQuery, used to store old and new node lists.
+ *
+ * @module watched/DomQueries/DomQuery
+ */
+
+/**
+ * The object used to create new DomQueries
+ */
+module.exports = {
+	/**
+	 * Initialize the DomQuery
+	 *
+	 * @param {module:watched/domQueries/QueryStrategyFactory~Strategies} strategy
+	 */
 	init: function (strategy) {
 		this._query = strategy;
 		this._old = [];
 	},
 
+	/**
+	 * Returns the last query result
+	 * @returns {Array.<HTMLElement>}
+	 */
 	old: function () {
 		return helper.arrayClone(this._old);
 	},
 
+	/**
+	 * Returns the current query result.
+	 *
+	 * This will overwrite the old query.
+	 * @returns {Array.<HTMLElement>}
+	 */
 	current: function () {
 		this._old = this._query();
 		return helper.arrayClone(this._old);
 	}
 };
-
-module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
 /**
- * @module domQueries/QueryStrategyFactory
+ * @module watched/domQueries/QueryStrategyFactory
  */
 
 
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	/**
-	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 * @namespace module:watched/domQueries/QueryStrategyFactory~Strategies
 	 */
 	Strategies = {};
 
@@ -600,7 +621,7 @@ var filterNodesInDocument = function (nodeArray) {
  * `element.querySelectorAll` strategy
  *
  * @function querySelectorAll
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
@@ -616,7 +637,7 @@ Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
  * `element.querySelector` strategy
  *
  * @function querySelector
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelector(selector)`
@@ -632,7 +653,7 @@ Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
  * `element.getElementsByTagName` strategy
  *
  * @function getElementsByTagName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} tagName
  * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
@@ -649,7 +670,7 @@ Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
  * `element.getElementsByClassName` strategy
  *
  * @function getElementsByClassName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} className
  * @returns {Function} wrapped version of `element.querySelectorAll(className)`
@@ -690,6 +711,12 @@ module.exports = {
 var smokesignals = require('smokesignals'),
 		helper       = require('../util/helper'),
 		constants    = require('../util/constants');
+
+/**
+ * DomObserver using a timeout. Used if the native Observer is not available
+ *
+ * @module watched/observers/IntervalObserver
+ */
 
 var allElementsLive = document.getElementsByTagName('*'),
 		getAllAsArray   = function () {
@@ -740,6 +767,12 @@ smokesignals.convert(IntervalObserver);
 module.exports = IntervalObserver;
 
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
+/**
+ * Native dom observer using {@link external:MutationObserver}
+ *
+ * @module watched/observers/NativeObserver
+ */
+
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -769,6 +802,11 @@ smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -802,13 +840,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -818,15 +889,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {
@@ -944,7 +1042,7 @@ var helper = require('./util/helper'),
 
 
 /**
- * @module DomElement
+ * @module watched/DomElement
  */
 
 
@@ -954,7 +1052,7 @@ var helper = require('./util/helper'),
  * Object used as prototype for new DomElement instances.
  * Should be used as a prototype for new `DomElement` instances
  *
- * @namespace module:DomElement~DomElement
+ * @namespace module:watched/DomElement~DomElement
  */
 var DomElement = {
 	__name__: 'DomElement'
@@ -977,10 +1075,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
  *
  * @function querySelectorAll
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -988,10 +1086,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * a `LiveNodeList`, not a single element as in the native `querySelector`.
  *
  * @function querySelector
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param element
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -999,10 +1097,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByTagName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -1011,10 +1109,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByClassName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -1022,7 +1120,7 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * factory method to create new `DomElement` instances
  *
  * @param {HTMLElement} element the HTMLElement used as root for all queries
- * @returns {module:DomElement~DomElement}
+ * @returns {module:watched/DomElement~DomElement}
  * @throws {Error|TypeError}
  * @example
  * var DomElement = require('./DomElement');
@@ -1059,14 +1157,13 @@ mutationObserver.init();
 /**
  * smokesignals event emitter
  *
- * @external smokesignals
- * @namespace external:smokesignals
- * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ * @external {smokesignals}
+ * @see https://bitbucket.org/bentomas/smokesignals.js
  */
 
 
 /**
- * @Module LiveNodeList
+ * @Module watched/LiveNodeList
  */
 
 
@@ -1094,13 +1191,13 @@ var diff = function (target, other) {
  * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
  * the `LiveNodeList` dispatches event on changes!
  *
- * @namespace module:LiveNodeList~LiveNodeList
- * @mixes smokesignals
+ * @namespace module:watched/LiveNodeList~LiveNodeList
+ * @mixes external:smokesignals
  * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
  * `LiveNodeList`.
- * @fires module:LiveNodeList~LiveNodeList#changed
- * @fires module:LiveNodeList~LiveNodeList#added
- * @fires module:LiveNodeList~LiveNodeList#removed
+ * @fires module:watched/LiveNodeList~LiveNodeList#changed
+ * @fires module:watched/LiveNodeList~LiveNodeList#added
+ * @fires module:watched/LiveNodeList~LiveNodeList#removed
  */
 var LiveNodeList = {
 	/**
@@ -1153,7 +1250,7 @@ var LiveNodeList = {
 			 *   console.log(currentElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @event module:watched/LiveNodeList~LiveNodeList#changed
 			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
 			 * native array
 			 */
@@ -1171,7 +1268,7 @@ var LiveNodeList = {
 			 *   console.log(newElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @event module:watched/LiveNodeList~LiveNodeList#added
 			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
@@ -1188,7 +1285,7 @@ var LiveNodeList = {
 			 *   console.log(removedElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @event module:watched/LiveNodeList~LiveNodeList#removed
 			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
@@ -1264,7 +1361,7 @@ var LiveNodeList = {
  * *you can't set the length, so tricks known to work with the native array won't have any effect here*
  *
  * @member length
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @type {number}
  * @instance
  */
@@ -1282,7 +1379,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList
  *
  * @function on
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -1292,7 +1389,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList that will only be called **once**
  *
  * @function once
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -1302,7 +1399,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Removes an event listener from the LiveNodeList
  *
  * @function off
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} [handler] a callback function
  * @instance
@@ -1314,7 +1411,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
  *
  * @function emit
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {...*} eventData event data passed into the event callbacks
  * @instance
@@ -1326,7 +1423,7 @@ smokesignals.convert(LiveNodeList);
  * factory method to create new `LiveNodeList` objects
  *
  * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
@@ -1607,33 +1704,55 @@ describe('LiveNodeList', function () {
 },{"../DomElement":3,"../LiveNodeList":4}],6:[function(require,module,exports){
 var helper = require('../util/helper');
 
-var DomQuery = {
+/**
+ * A DomQuery, used to store old and new node lists.
+ *
+ * @module watched/DomQueries/DomQuery
+ */
+
+/**
+ * The object used to create new DomQueries
+ */
+module.exports = {
+	/**
+	 * Initialize the DomQuery
+	 *
+	 * @param {module:watched/domQueries/QueryStrategyFactory~Strategies} strategy
+	 */
 	init: function (strategy) {
 		this._query = strategy;
 		this._old = [];
 	},
 
+	/**
+	 * Returns the last query result
+	 * @returns {Array.<HTMLElement>}
+	 */
 	old: function () {
 		return helper.arrayClone(this._old);
 	},
 
+	/**
+	 * Returns the current query result.
+	 *
+	 * This will overwrite the old query.
+	 * @returns {Array.<HTMLElement>}
+	 */
 	current: function () {
 		this._old = this._query();
 		return helper.arrayClone(this._old);
 	}
 };
-
-module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
 /**
- * @module domQueries/QueryStrategyFactory
+ * @module watched/domQueries/QueryStrategyFactory
  */
 
 
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	/**
-	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 * @namespace module:watched/domQueries/QueryStrategyFactory~Strategies
 	 */
 	Strategies = {};
 
@@ -1648,7 +1767,7 @@ var filterNodesInDocument = function (nodeArray) {
  * `element.querySelectorAll` strategy
  *
  * @function querySelectorAll
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
@@ -1664,7 +1783,7 @@ Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
  * `element.querySelector` strategy
  *
  * @function querySelector
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelector(selector)`
@@ -1680,7 +1799,7 @@ Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
  * `element.getElementsByTagName` strategy
  *
  * @function getElementsByTagName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} tagName
  * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
@@ -1697,7 +1816,7 @@ Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
  * `element.getElementsByClassName` strategy
  *
  * @function getElementsByClassName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} className
  * @returns {Function} wrapped version of `element.querySelectorAll(className)`
@@ -1738,6 +1857,12 @@ module.exports = {
 var smokesignals = require('smokesignals'),
 		helper       = require('../util/helper'),
 		constants    = require('../util/constants');
+
+/**
+ * DomObserver using a timeout. Used if the native Observer is not available
+ *
+ * @module watched/observers/IntervalObserver
+ */
 
 var allElementsLive = document.getElementsByTagName('*'),
 		getAllAsArray   = function () {
@@ -1788,6 +1913,12 @@ smokesignals.convert(IntervalObserver);
 module.exports = IntervalObserver;
 
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
+/**
+ * Native dom observer using {@link external:MutationObserver}
+ *
+ * @module watched/observers/NativeObserver
+ */
+
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -1817,6 +1948,11 @@ smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -1850,13 +1986,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -1866,15 +2035,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {
@@ -1999,7 +2195,7 @@ var helper = require('./util/helper'),
 
 
 /**
- * @module DomElement
+ * @module watched/DomElement
  */
 
 
@@ -2009,7 +2205,7 @@ var helper = require('./util/helper'),
  * Object used as prototype for new DomElement instances.
  * Should be used as a prototype for new `DomElement` instances
  *
- * @namespace module:DomElement~DomElement
+ * @namespace module:watched/DomElement~DomElement
  */
 var DomElement = {
 	__name__: 'DomElement'
@@ -2032,10 +2228,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * See [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall) for details.
  *
  * @function querySelectorAll
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -2043,10 +2239,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * a `LiveNodeList`, not a single element as in the native `querySelector`.
  *
  * @function querySelector
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param element
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 /**
@@ -2054,10 +2250,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByTagName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -2066,10 +2262,10 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
  *
  * @function getElementsByClassName
- * @memberof module:DomElement~DomElement
+ * @memberof module:watched/DomElement~DomElement
  * @param {String} selector
  * @instance
- * @returns {module:LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 
 
@@ -2077,7 +2273,7 @@ constants.AVAILABLE_QUERIES.forEach(function (queryType) {
  * factory method to create new `DomElement` instances
  *
  * @param {HTMLElement} element the HTMLElement used as root for all queries
- * @returns {module:DomElement~DomElement}
+ * @returns {module:watched/DomElement~DomElement}
  * @throws {Error|TypeError}
  * @example
  * var DomElement = require('./DomElement');
@@ -2114,14 +2310,13 @@ mutationObserver.init();
 /**
  * smokesignals event emitter
  *
- * @external smokesignals
- * @namespace external:smokesignals
- * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ * @external {smokesignals}
+ * @see https://bitbucket.org/bentomas/smokesignals.js
  */
 
 
 /**
- * @Module LiveNodeList
+ * @Module watched/LiveNodeList
  */
 
 
@@ -2149,13 +2344,13 @@ var diff = function (target, other) {
  * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
  * the `LiveNodeList` dispatches event on changes!
  *
- * @namespace module:LiveNodeList~LiveNodeList
- * @mixes smokesignals
+ * @namespace module:watched/LiveNodeList~LiveNodeList
+ * @mixes external:smokesignals
  * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
  * `LiveNodeList`.
- * @fires module:LiveNodeList~LiveNodeList#changed
- * @fires module:LiveNodeList~LiveNodeList#added
- * @fires module:LiveNodeList~LiveNodeList#removed
+ * @fires module:watched/LiveNodeList~LiveNodeList#changed
+ * @fires module:watched/LiveNodeList~LiveNodeList#added
+ * @fires module:watched/LiveNodeList~LiveNodeList#removed
  */
 var LiveNodeList = {
 	/**
@@ -2208,7 +2403,7 @@ var LiveNodeList = {
 			 *   console.log(currentElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @event module:watched/LiveNodeList~LiveNodeList#changed
 			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
 			 * native array
 			 */
@@ -2226,7 +2421,7 @@ var LiveNodeList = {
 			 *   console.log(newElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @event module:watched/LiveNodeList~LiveNodeList#added
 			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
@@ -2243,7 +2438,7 @@ var LiveNodeList = {
 			 *   console.log(removedElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @event module:watched/LiveNodeList~LiveNodeList#removed
 			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
@@ -2319,7 +2514,7 @@ var LiveNodeList = {
  * *you can't set the length, so tricks known to work with the native array won't have any effect here*
  *
  * @member length
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @type {number}
  * @instance
  */
@@ -2337,7 +2532,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList
  *
  * @function on
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -2347,7 +2542,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList that will only be called **once**
  *
  * @function once
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -2357,7 +2552,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Removes an event listener from the LiveNodeList
  *
  * @function off
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} [handler] a callback function
  * @instance
@@ -2369,7 +2564,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
  *
  * @function emit
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {...*} eventData event data passed into the event callbacks
  * @instance
@@ -2381,7 +2576,7 @@ smokesignals.convert(LiveNodeList);
  * factory method to create new `LiveNodeList` objects
  *
  * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {
@@ -2399,7 +2594,7 @@ module.exports = function (queryStrategy) {
 
 
 },{"./domQueries/DomQuery":6,"./observers/IntervalObserver":8,"./observers/NativeObserver":9,"./util/constants":10,"./util/helper":11,"smokesignals":1}],5:[function(require,module,exports){
-var watched = require('../watched');
+var watched = require('../../watched');
 
 describe('watched: public method', function () {
 
@@ -2978,36 +3173,58 @@ describe('watched: elements can be removed and added again', function () {
 		wrapper.appendChild(inside2);
 	});
 });
-},{"../watched":12}],6:[function(require,module,exports){
+},{"../../watched":12}],6:[function(require,module,exports){
 var helper = require('../util/helper');
 
-var DomQuery = {
+/**
+ * A DomQuery, used to store old and new node lists.
+ *
+ * @module watched/DomQueries/DomQuery
+ */
+
+/**
+ * The object used to create new DomQueries
+ */
+module.exports = {
+	/**
+	 * Initialize the DomQuery
+	 *
+	 * @param {module:watched/domQueries/QueryStrategyFactory~Strategies} strategy
+	 */
 	init: function (strategy) {
 		this._query = strategy;
 		this._old = [];
 	},
 
+	/**
+	 * Returns the last query result
+	 * @returns {Array.<HTMLElement>}
+	 */
 	old: function () {
 		return helper.arrayClone(this._old);
 	},
 
+	/**
+	 * Returns the current query result.
+	 *
+	 * This will overwrite the old query.
+	 * @returns {Array.<HTMLElement>}
+	 */
 	current: function () {
 		this._old = this._query();
 		return helper.arrayClone(this._old);
 	}
 };
-
-module.exports = DomQuery;
 },{"../util/helper":11}],7:[function(require,module,exports){
 /**
- * @module domQueries/QueryStrategyFactory
+ * @module watched/domQueries/QueryStrategyFactory
  */
 
 
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	/**
-	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 * @namespace module:watched/domQueries/QueryStrategyFactory~Strategies
 	 */
 	Strategies = {};
 
@@ -3022,7 +3239,7 @@ var filterNodesInDocument = function (nodeArray) {
  * `element.querySelectorAll` strategy
  *
  * @function querySelectorAll
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
@@ -3038,7 +3255,7 @@ Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
  * `element.querySelector` strategy
  *
  * @function querySelector
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelector(selector)`
@@ -3054,7 +3271,7 @@ Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
  * `element.getElementsByTagName` strategy
  *
  * @function getElementsByTagName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} tagName
  * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
@@ -3071,7 +3288,7 @@ Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
  * `element.getElementsByClassName` strategy
  *
  * @function getElementsByClassName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} className
  * @returns {Function} wrapped version of `element.querySelectorAll(className)`
@@ -3112,6 +3329,12 @@ module.exports = {
 var smokesignals = require('smokesignals'),
 		helper       = require('../util/helper'),
 		constants    = require('../util/constants');
+
+/**
+ * DomObserver using a timeout. Used if the native Observer is not available
+ *
+ * @module watched/observers/IntervalObserver
+ */
 
 var allElementsLive = document.getElementsByTagName('*'),
 		getAllAsArray   = function () {
@@ -3162,6 +3385,12 @@ smokesignals.convert(IntervalObserver);
 module.exports = IntervalObserver;
 
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],9:[function(require,module,exports){
+/**
+ * Native dom observer using {@link external:MutationObserver}
+ *
+ * @module watched/observers/NativeObserver
+ */
+
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
@@ -3191,6 +3420,11 @@ smokesignals.convert(NativeObserver);
 
 module.exports = NativeObserver;
 },{"../util/constants":10,"../util/helper":11,"smokesignals":1}],10:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -3224,13 +3458,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -3240,15 +3507,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {
@@ -3260,7 +3554,7 @@ module.exports = {
 	}
 };
 },{"./constants":10}],12:[function(require,module,exports){
-var DomElement = require('./DomElement');
+var DomElement = require('./src/DomElement');
 /**
  * @module watched
  */
@@ -3293,28 +3587,50 @@ module.exports = function (element) {
 		return DomElement(element);
 	}
 };
-},{"./DomElement":3}]},{},[5])(5)
+},{"./src/DomElement":3}]},{},[5])(5)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var helper = require('../util/helper');
 
-var DomQuery = {
+/**
+ * A DomQuery, used to store old and new node lists.
+ *
+ * @module watched/DomQueries/DomQuery
+ */
+
+/**
+ * The object used to create new DomQueries
+ */
+module.exports = {
+	/**
+	 * Initialize the DomQuery
+	 *
+	 * @param {module:watched/domQueries/QueryStrategyFactory~Strategies} strategy
+	 */
 	init: function (strategy) {
 		this._query = strategy;
 		this._old = [];
 	},
 
+	/**
+	 * Returns the last query result
+	 * @returns {Array.<HTMLElement>}
+	 */
 	old: function () {
 		return helper.arrayClone(this._old);
 	},
 
+	/**
+	 * Returns the current query result.
+	 *
+	 * This will overwrite the old query.
+	 * @returns {Array.<HTMLElement>}
+	 */
 	current: function () {
 		this._old = this._query();
 		return helper.arrayClone(this._old);
 	}
 };
-
-module.exports = DomQuery;
 },{"../util/helper":4}],2:[function(require,module,exports){
 var DomQuery = require('../DomQuery');
 
@@ -3330,6 +3646,11 @@ describe('DomQuery', function () {
 
 });
 },{"../DomQuery":1}],3:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -3363,13 +3684,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -3379,15 +3733,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {
@@ -3402,14 +3783,14 @@ module.exports = {
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.watched = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @module domQueries/QueryStrategyFactory
+ * @module watched/domQueries/QueryStrategyFactory
  */
 
 
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	/**
-	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 * @namespace module:watched/domQueries/QueryStrategyFactory~Strategies
 	 */
 	Strategies = {};
 
@@ -3424,7 +3805,7 @@ var filterNodesInDocument = function (nodeArray) {
  * `element.querySelectorAll` strategy
  *
  * @function querySelectorAll
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
@@ -3440,7 +3821,7 @@ Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
  * `element.querySelector` strategy
  *
  * @function querySelector
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelector(selector)`
@@ -3456,7 +3837,7 @@ Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
  * `element.getElementsByTagName` strategy
  *
  * @function getElementsByTagName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} tagName
  * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
@@ -3473,7 +3854,7 @@ Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
  * `element.getElementsByClassName` strategy
  *
  * @function getElementsByClassName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} className
  * @returns {Function} wrapped version of `element.querySelectorAll(className)`
@@ -3559,6 +3940,11 @@ describe('QueryStrategyFactory', function () {
 
 });
 },{"../QueryStrategyFactory":1}],3:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -3592,13 +3978,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -3608,15 +4027,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {
@@ -3666,6 +4112,11 @@ describe('constants', function () {
 	//});
 });
 },{"../constants":2}],2:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -3763,6 +4214,11 @@ describe('helpers', function () {
 
 });
 },{"../helper":3}],2:[function(require,module,exports){
+/**
+ * Constants used throughout the library
+ *
+ * @module watched/util/constants
+ */
 
 var constants = {
 
@@ -3796,13 +4252,46 @@ var INDEX_OF_FAIL = -1;
 var hasMutationObserver = !!(window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver),
 	NativeMutationObserver = hasMutationObserver ? MutationObserver || WebKitMutationObserver || MozMutationObserver : null;
 
+/**
+ * @external {MutationObserver}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ */
+
+/**
+ * @external {HTMLElement}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+ */
+
+/**
+ * @external {NodeList}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+ */
+
+/**
+ * Helper methods/properties used with watched.js
+ *
+ * @module watched/util/helper
+ */
 
 module.exports = {
 
+	/**
+	 * True, if a native mutation observer exists
+	 * @type {boolean}
+	 */
 	hasMutationObserver: hasMutationObserver,
 
+	/**
+	 * Mutation observer object. `null`, if {@link watched/util/helper.hasMutationObserver} is false
+	 * @type {MutationObserver}
+	 */
 	NativeMutationObserver: NativeMutationObserver,
 
+	/**
+	 * Checks if `el` isn't a valid dom element
+	 * @param el
+	 * @returns {boolean}
+	 */
 	isInvalidDomElement: function (el) {
 		if (el) {
 			return constants.AVAILABLE_QUERIES.some(function (query) {
@@ -3812,15 +4301,42 @@ module.exports = {
 			return true;
 		}
 	},
+
+	/**
+	 * Transforms a nodelist you get from native browser queries to an array
+	 * @param {NodeList} nodeList
+	 * @returns {Array.<HTMLElement>}
+	 */
 	nodeListToArray: function (nodeList) {
-		return Array.prototype.slice.call(nodeList)
+		return Array.prototype.slice.call(nodeList);
 	},
+
+	/**
+	 * Checks if an array contains an element
+	 * @param {Array} list
+	 * @param {*} element
+	 * @returns {boolean}
+	 */
 	arrayContains: function (list, element) {
 		return list.indexOf(element) !== INDEX_OF_FAIL;
 	},
+
+	/**
+	 * Clones an array
+	 * @param {Array} arr
+	 * @returns {Array}
+	 */
 	arrayClone: function (arr) {
 		return arr.slice(0);
 	},
+
+	/**
+	 * Debounce the call of a function
+	 * @param {Function} a the function to debounce
+	 * @param {Number} b the debounce delay
+	 * @param {boolean} c immediate
+	 * @returns {Function}
+	 */
 	debounce: function (a, b, c) {
 		var d;
 		return function () {

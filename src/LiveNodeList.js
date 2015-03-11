@@ -12,14 +12,13 @@ mutationObserver.init();
 /**
  * smokesignals event emitter
  *
- * @external smokesignals
- * @namespace external:smokesignals
- * @see {@link https://bitbucket.org/bentomas/smokesignals.js}
+ * @external {smokesignals}
+ * @see https://bitbucket.org/bentomas/smokesignals.js
  */
 
 
 /**
- * @Module LiveNodeList
+ * @Module watched/LiveNodeList
  */
 
 
@@ -47,13 +46,13 @@ var diff = function (target, other) {
  * It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
  * the `LiveNodeList` dispatches event on changes!
  *
- * @namespace module:LiveNodeList~LiveNodeList
- * @mixes smokesignals
+ * @namespace module:watched/LiveNodeList~LiveNodeList
+ * @mixes external:smokesignals
  * @see {@link https://bitbucket.org/bentomas/smokesignals.js|smokesignals} for the event emitter library mixed into
  * `LiveNodeList`.
- * @fires module:LiveNodeList~LiveNodeList#changed
- * @fires module:LiveNodeList~LiveNodeList#added
- * @fires module:LiveNodeList~LiveNodeList#removed
+ * @fires module:watched/LiveNodeList~LiveNodeList#changed
+ * @fires module:watched/LiveNodeList~LiveNodeList#added
+ * @fires module:watched/LiveNodeList~LiveNodeList#removed
  */
 var LiveNodeList = {
 	/**
@@ -106,7 +105,7 @@ var LiveNodeList = {
 			 *   console.log(currentElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#changed
+			 * @event module:watched/LiveNodeList~LiveNodeList#changed
 			 * @param {HTMLElement[]} currentElements current elements. These are the same as in the `LiveNodeList`, but in a
 			 * native array
 			 */
@@ -124,7 +123,7 @@ var LiveNodeList = {
 			 *   console.log(newElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#added
+			 * @event module:watched/LiveNodeList~LiveNodeList#added
 			 * @param {HTMLElement[]} addedElements the added elements
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_ADDED, addedElements);
@@ -141,7 +140,7 @@ var LiveNodeList = {
 			 *   console.log(removedElements);
 			 * });
 			 *
-			 * @event module:LiveNodeList~LiveNodeList#removed
+			 * @event module:watched/LiveNodeList~LiveNodeList#removed
 			 * @param {HTMLElement[]} removedElements elements removed from the `LiveNodeList`
 			 */
 			this._bubble(constants.CUSTOM_EVENT_ON_ELEMENTS_REMOVED, removedElements);
@@ -217,7 +216,7 @@ var LiveNodeList = {
  * *you can't set the length, so tricks known to work with the native array won't have any effect here*
  *
  * @member length
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @type {number}
  * @instance
  */
@@ -235,7 +234,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList
  *
  * @function on
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -245,7 +244,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Add an event listener to the LiveNodeList that will only be called **once**
  *
  * @function once
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} handler a callback function
  * @instance
@@ -255,7 +254,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Removes an event listener from the LiveNodeList
  *
  * @function off
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {function} [handler] a callback function
  * @instance
@@ -267,7 +266,7 @@ Object.defineProperty(LiveNodeList, 'length', {
  * Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
  *
  * @function emit
- * @memberof module:LiveNodeList~LiveNodeList
+ * @memberof module:watched/LiveNodeList~LiveNodeList
  * @param {string} eventName The name of the event
  * @param {...*} eventData event data passed into the event callbacks
  * @instance
@@ -279,7 +278,7 @@ smokesignals.convert(LiveNodeList);
  * factory method to create new `LiveNodeList` objects
  *
  * @param {Function} queryStrategy a query created with {@link module:domQueries/QueryStrategyFactory.create}
- * @returns {module:LiveNodeList~LiveNodeList}
+ * @returns {module:watched/LiveNodeList~LiveNodeList}
  */
 module.exports = function (queryStrategy) {
 	if (this instanceof module.exports) {

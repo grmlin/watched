@@ -1,4 +1,4 @@
-var watched = require('../watched');
+var watched = require('../../watched');
 
 describe('watched: public method', function () {
 

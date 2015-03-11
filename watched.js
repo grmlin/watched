@@ -1,4 +1,4 @@
-var DomElement = require('./DomElement');
+var DomElement = require('./src/DomElement');
 /**
  * @module watched
  */

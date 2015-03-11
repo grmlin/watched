@@ -1,12 +1,12 @@
 /**
- * @module domQueries/QueryStrategyFactory
+ * @module watched/domQueries/QueryStrategyFactory
  */
 
 
 var constants = require('../util/constants'),
 	helper = require('../util/helper'),
 	/**
-	 * @namespace module:domQueries/QueryStrategyFactory~Strategies
+	 * @namespace module:watched/domQueries/QueryStrategyFactory~Strategies
 	 */
 	Strategies = {};
 
@@ -21,7 +21,7 @@ var filterNodesInDocument = function (nodeArray) {
  * `element.querySelectorAll` strategy
  *
  * @function querySelectorAll
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelectorAll(selector)`
@@ -37,7 +37,7 @@ Strategies[constants.queries.QUERY_SELECTOR_ALL] = function (element, selector) 
  * `element.querySelector` strategy
  *
  * @function querySelector
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} selector
  * @returns {Function} wrapped version of `element.querySelector(selector)`
@@ -53,7 +53,7 @@ Strategies[constants.queries.QUERY_SELECTOR] = function (element, selector) {
  * `element.getElementsByTagName` strategy
  *
  * @function getElementsByTagName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} tagName
  * @returns {Function} wrapped version of `element.getElementsByTagName(tagName)`
@@ -70,7 +70,7 @@ Strategies[constants.queries.GET_ELEMENTS_BY_TAG_NAME] = function (element, tagN
  * `element.getElementsByClassName` strategy
  *
  * @function getElementsByClassName
- * @memberof module:domQueries/QueryStrategyFactory~Strategies
+ * @memberof module:watched/domQueries/QueryStrategyFactory~Strategies
  * @param {HTMLElement} element
  * @param {String} className
  * @returns {Function} wrapped version of `element.querySelectorAll(className)`

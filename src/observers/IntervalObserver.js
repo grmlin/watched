@@ -2,6 +2,12 @@ var smokesignals = require('smokesignals'),
 		helper       = require('../util/helper'),
 		constants    = require('../util/constants');
 
+/**
+ * DomObserver using a timeout. Used if the native Observer is not available
+ *
+ * @module watched/observers/IntervalObserver
+ */
+
 var allElementsLive = document.getElementsByTagName('*'),
 		getAllAsArray   = function () {
 			return helper.nodeListToArray(allElementsLive);

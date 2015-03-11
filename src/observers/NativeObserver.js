@@ -1,3 +1,9 @@
+/**
+ * Native dom observer using {@link external:MutationObserver}
+ *
+ * @module watched/observers/NativeObserver
+ */
+
 var smokesignals      = require('smokesignals'),
 		helper = require('../util/helper'),
 		constants = require('../util/constants'),
