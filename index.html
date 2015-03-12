@@ -5,53 +5,162 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Watched by grmlin</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <link rel="stylesheet" href="bower_components/bootswatch/yeti/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/bootswatch/Lumen/bootstrap.min.css"/>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <style>
+        body > .container {
+            padding-top: 40px;
+        }
+
+        .jumbotron pre {
+            margin-bottom: 40px;
+        }
+        .footer {
+            border-top: 1px solid #eeeeee;
+            margin-top: 80px;
+            padding-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<div class="wrapper">
-    <header>
-        <h1>Watched</h1>
 
-        <p>watched.js - Live, event driven dom element collections</p>
+<div class="container">
+    <div class="jumbotron">
+        <h1>watched.js</h1>
 
+        <p class="lead">Live, event driven dom element collections</p>
 
-        <ul>
-            <li><a href="https://github.com/grmlin/watched/zipball/master">Download <strong>ZIP File</strong></a></li>
-            <li><a href="https://github.com/grmlin/watched/tarball/master">Download <strong>TAR Ball</strong></a></li>
-            <li><a href="https://github.com/grmlin/watched">View On <strong>GitHub</strong></a></li>
-        </ul>
-    </header>
-    <section>
+        <p>&nbsp;</p>
+<pre><code>var watched = require('watched');
+watched('.foo').on('changed', function(currentElements){
+    console.log(currentElements);
+});
+</code></pre>
 
-
-        <h3>Read the documentation</h3>
-        <p class="lead">
-            <a class="btn btn-default" href="https://github.com/grmlin/watched">https://github.com/grmlin/watched</a>
+        <p style="text-align: center;">
+            <a class="btn btn-lg btn-primary" href="https://github.com/grmlin/watched/releases" role="button">Download</a>
+            <br/> <span class="badge">~2.6 kB minified/gzipped</span>
+            <br/><br/>
+            or NPM <br/>
+            <code>$ npm install watched --save</code> <br/><br/>
+            or Bower <br/>
+            <code>$ bower install watched</code>
         </p>
-        <h3>Try it</h3>
-        <p class="lead">
-            <a class="btn btn-default" href="demo.html">Demo</a>
+        <p style="text-align: center;">
+            <br/><br/>
+            <a class="btn btn-default" href="doc" role="button">Documentation</a> &nbsp;&nbsp;
+            <a class="btn btn-default" href="demo.html" role="button">Demo</a>
         </p>
 
+    </div>
 
-    </section>
-    <footer>
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>Usage</h2>
+
+            <div class="highlight highlight-javascript"><pre><span class="pl-c">// give me nodelists</span>
+
+<span class="pl-c">// quick</span>
+<span class="pl-s">var</span> foos  <span class="pl-k">=</span> watched(<span class="pl-s1"><span
+                        class="pl-pds">'</span>.foo<span class="pl-pds">'</span></span>);
+<span class="pl-c">// or more specific</span>
+<span class="pl-s">var</span> foos2 <span class="pl-k">=</span> watched(<span class="pl-s3">document</span>).querySelectorAll(<span
+                        class="pl-s1"><span class="pl-pds">'</span>.foo<span class="pl-pds">'</span></span>); <span
+                        class="pl-c">// same as watched('.foo')</span>
+<span class="pl-s">var</span> bars  <span class="pl-k">=</span> watched(<span class="pl-s3">document</span>).querySelector(<span
+                        class="pl-s1"><span class="pl-pds">'</span>.bar<span class="pl-pds">'</span></span>);
+<span class="pl-s">var</span> bazs  <span class="pl-k">=</span> watched(<span class="pl-s3">document</span>).getElementsByClassName(<span
+                        class="pl-s1"><span class="pl-pds">'</span>baz<span class="pl-pds">'</span></span>);
+<span class="pl-s">var</span> links <span class="pl-k">=</span> watched(<span class="pl-s3">document</span>).<span
+                        class="pl-s3">getElementsByTagName</span>(<span class="pl-s1"><span
+                        class="pl-pds">'</span>a<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// need the length</span>
+<span class="pl-s">var</span> linkcount <span class="pl-k">=</span> links.<span class="pl-sc">length</span>;
+
+<span class="pl-c">// access elements directly </span>
+<span class="pl-s">var</span> aLink <span class="pl-k">=</span> links[<span class="pl-c1">0</span>];
+
+<span class="pl-c">// or iterate</span>
+foos.forEach(<span class="pl-st">function</span>(<span class="pl-vpf">element</span>){
+  <span class="pl-en">console</span><span class="pl-s3">.log</span>(element);
+});
+
+<span class="pl-c">// finally, stay up to date, when elements are added</span>
+nodeList.on(<span class="pl-s1"><span class="pl-pds">'</span>added<span class="pl-pds">'</span></span>, <span
+                        class="pl-st">function</span>(<span class="pl-vpf">addedElements</span>){
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(addedElements);
+});
+
+<span class="pl-c">// removed</span>
+nodeList.on(<span class="pl-s1"><span class="pl-pds">'</span>removed<span class="pl-pds">'</span></span>, <span
+                        class="pl-st">function</span>(<span class="pl-vpf">removedElements</span>){
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(removedElements);
+});
+
+<span class="pl-c">// or changed in general</span>
+nodeList.on(<span class="pl-s1"><span class="pl-pds">'</span>changed<span class="pl-pds">'</span></span>, <span
+                        class="pl-st">function</span>(<span class="pl-vpf">currentElements</span>){
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(currentElements);
+});</pre>
+            </div>
+        </div>
+
+
+    </div>
+
+    <footer class="footer">
         <p>This project is maintained by <a href="https://github.com/grmlin">grmlin</a></p>
-
-        <p>
-            <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a>
-            </small>
-        </p>
     </footer>
+
 </div>
-<script src="javascripts/scale.fix.js"></script>
+<!-- /container -->
+
 
 </body>
+<!--<body>-->
+<!--<div class="wrapper">-->
+<!--<header>-->
+<!--<h1>Watched</h1>-->
+
+<!--<p>watched.js - Live, event driven dom element collections</p>-->
+
+
+<!--<ul>-->
+<!--<li><a href="https://github.com/grmlin/watched/zipball/master">Download <strong>ZIP File</strong></a></li>-->
+<!--<li><a href="https://github.com/grmlin/watched/tarball/master">Download <strong>TAR Ball</strong></a></li>-->
+<!--<li><a href="https://github.com/grmlin/watched">View On <strong>GitHub</strong></a></li>-->
+<!--</ul>-->
+<!--</header>-->
+<!--<section>-->
+
+
+<!--<h3>Read the documentation</h3>-->
+<!--<p class="lead">-->
+<!--<a class="btn btn-default" href="doc">open API docs</a>-->
+<!--</p>-->
+<!--<h3>Try it</h3>-->
+<!--<p class="lead">-->
+<!--<a class="btn btn-default" href="demo.html">Demo</a>-->
+<!--</p>-->
+
+
+<!--</section>-->
+<!--<footer>-->
+<!--<p>This project is maintained by <a href="https://github.com/grmlin">grmlin</a></p>-->
+
+<!--<p>-->
+<!--<small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a>-->
+<!--</small>-->
+<!--</p>-->
+<!--</footer>-->
+<!--</div>-->
+<!--<script src="javascripts/scale.fix.js"></script>-->
+
+<!--</body>-->
 </html>
