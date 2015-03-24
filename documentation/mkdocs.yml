@@ -1,14 +1,12 @@
-site_name: 'GREMLIN.JS'
+site_name: 'watched.js'
 theme: 'bootstrap'
 theme_dir: 'custom_theme'
-repo_url: 'https://github.com/grmlin/gremlins'
+repo_url: 'https://github.com/grmlin/watched'
 site_author: 'Andreas Wehr'
 markdown_extensions: [fenced_code, meta, def_list]
-extra_javascript: ['js/gremlins.js']
+extra_javascript: ['js/watched.js', 'js/demo.js']
 
 pages:
 - ['index.md', 'GREMLIN.JS']
-- ['learn.md', 'Learn']
 - ['api.md', 'Documentation']
-- ['modules.html', 'Find Modules']
-- ['components.html', 'Find Components']
+- ['demo.html', 'Demo']

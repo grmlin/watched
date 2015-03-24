@@ -1,0 +1,111 @@
+no_nav: true
+<style type="text/css">
+    #query-selector-all-list .list-group-item {
+        color: #f04124;
+    }
+    #query-selector-all-list .list-group-item:before {
+        content: "list item #" attr(data-index);
+    }
+    #query-selector-all-alert {
+        position: fixed;
+        top: 80px;
+        width: 100%;
+        z-index: 1000;
+    }
+    #query-selector-all-alert .alert {
+        float: none;
+        margin: 0 auto;
+    }
+</style>
+<h3><code>querySelectorAll</code></h3>
+
+<p>A live nodelist using <code>querySelectorAll</code>.</p>
+
+<p>&nbsp;</p>
+
+
+<div class="row">
+<div class="col-md-12">
+<p>
+Click a list entry to remove it. Use the developer tools to add and remove elements. It's not the click/sumbit handlers, it's the live node list that triggers the changes.
+</p>
+<p>&nbsp;</p>
+
+</div>
+<div class="col-md-6">
+
+
+<div class="well">
+<form role="form" id="query-selector-all-add-form">
+<!--<div class="form-group">
+<span>Add</span>
+<input type="number" class="form-control" id="query-selector-all-input" placeholder="Enter a number" value="1">
+<span>items to the list</span>
+</div>
+-->
+<legend>Add new Items</legend>
+
+<div class="form-group">
+<label for="query-selector-all-add-input-count">No of items</label>
+<input type="number" class="form-control" id="query-selector-all-add-input-count" placeholder="Enter a number" value="1" min="1">
+<span class="help-block"><small>New items are red when added to the list. They turn green after the <code>added</code> event was triggered</small></span>
+</div>
+<div class="form-group">
+<label for="query-selector-all-add-input-delay">Delay</label>
+<input type="number" class="form-control" id="query-selector-all-add-input-delay" placeholder="Enter a number" value="20" min="0">
+<span class="help-block"><small>Time waited after a list item was added. Everything <=20ms
+    should add the items in batches.
+</small></span>
+</div>
+<button type="submit" class="btn btn-default btn-block btn-xs"><i class="fa fa-plus-square-o"></i> Add</button>
+
+</form>
+</div>
+
+</div>
+<div class="col-md-6">
+
+
+<div class="panel panel-default">
+<div class="panel-heading">
+Fancy list
+</div>
+<div id="query-selector-all-list" class="list-group">
+<a class="list-group-item watched-item" href="#"></a>
+<a class="list-group-item watched-item" href="#"></a>
+<a class="list-group-item watched-item" href="#"></a>
+</div>
+<div class="panel-footer clearfix">
+<span id="query-selector-all-count"></span> item(s)
+</div>
+</div>
+</div>
+<div class="col-md-12">
+<h3>The code <small>(excerpts)</small></h3>
+
+```js
+var listEl = document.getElementById('query-selector-all-list'),
+nodeList = watched(listEl).querySelectorAll('.watched-item');
+
+var updateList = function () {
+countEl.textContent = nodeList.length; //update count
+nodeList.forEach(function (el, index) {...}); //update every item
+};
+
+// Listen to the lists update events
+nodeList.on('added', function (addedElements) {
+updateList();
+});
+nodeList.on('removed', function (addedElements) {
+updateList();
+});
+```
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<div id="query-selector-all-alert">
+
+</div>

@@ -18,7 +18,9 @@ watched('.foo').on('changed', function(currentElements){
 });
 ```
 
-## Installation
+<br><br>
+
+## Installation <small>~2.6 kB minified/gzipped</small>
 
 ### NPM
 
@@ -32,8 +34,11 @@ watched('.foo').on('changed', function(currentElements){
 [Download](https://github.com/grmlin/watched/releases) the latest release and include it
 
      <script src="watched.min.js" />
-    
+   
+<br><br>
 ## Usage
+
+[Open demo](./demo.html)
 
 ```js
 // give me nodelists

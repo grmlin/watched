@@ -1,138 +1,184 @@
-## GREMLINS
-The main entry point creating gremlin components
+## watched
+`LiveNodeList watched(String selector)`  
+`DomElement   watched(HTMLElement element)`
 
-### create
+Creates a `LiveNodeList` directly, or a decorated `HTMLElement` as `DomElement` to get lists with
+different queries by yourself.
 
-`Gremlin create(object specification)`
+Use a selector to get a `LiveNodeList` or an `HTMLElement` for complete control
 
-Creates a new gremlin based on [`specification`](#gremlin-component-specification). 
-The spec is used for all custom elements later found in the dom
-
-The spec has to provide one property, `name`, that is required. Unless you specify a `tagName`, the name will be used
-create the custom element and it's tag name: `${name}-gremlin`.
-
-#### Example
 
 ```js
-var gremlins = require('gremlins');
+var watched = require('watched');
 
-gremlins.create({
-  name: 'foo', // finds all custom elements <foo-gremlin></foo-gremlin>
-  initialize: function(){
-    this.el.innerHTML = 'Hello Foo';
-  }
+var foos = watched('.foo'); // LiveNodeList
+var foos = watched(document); // DomElement
+```
+
+<br><br>
+## DomElement
+
+Wrapper for a `HTMLElement`, that offers different queries. All queries return the same type of `LiveNodeList` that's 
+constantly updated, aka live.
+
+### querySelectorAll
+
+`LiveNodeList querySelectorAll(String selector)` 
+
+Used like the native [`querySelectorAll`](http://devdocs.io/dom/document.queryselectorall).
+
+```js
+var foos = watched(document).querySelectorAll('.foo'); // LiveNodeList
+```
+
+### querySelector
+
+`LiveNodeList querySelector(String selector)` 
+
+See [`querySelector`](http://devdocs.io/dom/document.queryselector) for details. The returned object will always be 
+a `LiveNodeList`, not a single element as in the native `querySelector`.
+
+```js
+var foos = watched(document).querySelector('.foo'); // LiveNodeList
+``` 
+
+### getElementsByTagName
+
+`LiveNodeList getElementsByTagName(String tagName)` 
+
+See [`getElementsByTagName`](http://devdocs.io/dom/element.getelementsbytagname) for details. Should be faster than
+the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+
+```js
+var links = watched(document).querySelector('a'); // LiveNodeList
+``` 
+
+### getElementsByClassName
+
+`LiveNodeList getElementsByClassName(String className)` 
+
+See [`getElementsByClassName`](http://devdocs.io/dom/document.getelementsbyclassname) for details. Should be faster
+than the query selectors, as **watched.js** uses the native live nodelist internally to get the elements you want.
+ 
+```js
+var foos = watched(document).querySelector('foo'); // LiveNodeList
+``` 
+
+<br><br>
+
+## LiveNodeList
+
+A live list of dom elements, always up to date.
+
+It's a live list, similar to the list returned by `getElementsBy(Tag|Class)Name`. But other than these queries,
+the `LiveNodeList` dispatches event on changes!
+
+It's an event emitter, dispatching events if the `LiveNodeList` changes.
+
+### Events
+#### changed
+
+`LiveNodeList event`
+
+Event called when new elements are added to or removed from the dom
+
+The event listeners callback will be called with one argument: an array containing all elements currently in the list
+
+```js
+nodeList.on('changed', function(currentElements){
+  console.log(currentElements);
+});
+```
+<br>
+
+#### added
+
+`LiveNodeList event`   
+
+Event called when new elements are added to the dom
+
+The event listeners callback will be called with one argument: an array containing the newly found dom elements
+
+```js
+nodeList.on('added', function(newElements){
+  console.log(newElements);
+});
+```
+<br>
+
+#### removed
+
+`LiveNodeList event`
+
+Event called when elements are removed from the dom
+
+The event listeners callback will be called with one argument: an array `removedElements` containing the dom elements removed from the list (removed from the dom)
+
+```js
+nodeList.on('removed', function(removedElements){
+  console.log(removedElements);
+});
+```
+<br><br>
+
+------
+
+### length
+
+`Number length`
+
+The length of the node list.
+
+you can't set the length, so tricks known to work with the native array won't have any effect here*
+
+
+### on
+`on(String event, Function callback)`
+
+Add an event listener to the LiveNodeList
+
+
+### once
+`once(String event, Function callback)`
+
+Add an event listener to the LiveNodeList that will only be called once
+
+### off
+`off(String event, [Function callback])`
+
+Removes an event listener from the LiveNodeList
+
+### emit
+`emit(String event, ...eventData)`
+
+Emit an event.
+
+Normally you don't do that, but it's part of the `LiveNodeList`'s prototype, so it's documented here
+
+### forEach
+
+`forEach(Function callback, Object thisArg)`
+
+see the native [`Array.forEach`](http://devdocs.io/javascript/global_objects/array/foreach) for details.
+
+```js
+nodeList.forEach(function(element){
+  element.style.color = "green";
 });
 ```
 
-<br><br><br>
+### pause
 
-## COMPONENT SPECIFICATIONS
+`pause()`
 
-### name
+Freezes the nodelist in it's current form and pauses the dom mutation listener
 
-`string name`
+### resume
 
-Unique component name. 
-Without a `tagName` it will be used to create the custom elements tag name with the pattern `${name}-gremlin`:
+`resume()`
 
-```js
-gremlins.create({
-  name: 'foo'
-});
-```
-
-```html
-<foo-gremlin></foo-gremlin>
-```
-    
-
-### tagName
-
-`string tagName` 
-
-Override the default tag name. It has to use a minimum of one hyphen, otherwise the custom element can't be created.
-
-```js
-gremlins.create({
-  name: 'hello',
-  tagName: 'hello-world'
-});
-```
-
-```html
-<hello-world></hello-world>
-```
-    
-### el
-
-`HTMLElement el`
-
-The dom element for this component. Available inside the `initialize` call and all other component method
-
-```js
-gremlins.create({
-  name: 'foo', 
-  initialize: function(){
-    this.el.innerHTML = 'Hello Foo';
-  }
-});
-```
-
-### mixins
-
-`object mixins` 
-
-An object, or an array of objects, used as mixin(s). This way it's easy to extend you're components capabilities in a 
-modular way.  
+Resume the query and listen to dom mutations again.
+Creating a LiveNodeList will do that initially for you.
 
 
-```js
-var gremlinsJquery = require('gremlins-jquery');
 
-gremlins.create({
-  mixins: [gremlinsJquery],
-  name: 'foo', 
-  initialize: function(){
-    this.$el.text('Hello Foo');
-  }
-});
-```
-
-### initialize() 
-
-`function initialize()`
-
-constructor function called for all instances on creation
-
-### destroy()
-
-`function destroy()`
-
-called, when the element leaves the dom. Can be used to unbind event handlers and such
-
-
-## MIXINS / MODULES
-
-Mixins are an easy way to share component behaviour between components.   
-Mixins are simple javascript object literals extending the components prototype. If a mixin and a component or another 
-mixin use the same method names, they will be decorated and called in the order they were added to the spec.
-
-<div class="text-right"><span class="label label-primary">mixin</span></div>
-```js
-var gremlinsJquery = {
-  initialize: function(){
-    this.$el = $(this.el);
-  }
-}
-```
-
-<div class="text-right"><span class="label label-primary">specification</span></div>
-```js
-gremlins.create({
-  mixins: [gremlinsJquery],
-  name: 'foo', 
-  initialize: function(){
-    this.$el.text('Hello Foo');
-  }
-});
-```
