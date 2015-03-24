@@ -184,19 +184,19 @@ Fancy list
 <div class="col-md-12">
 <h3>The code <small>(excerpts)</small></h3></p>
 <pre><code class="js">var listEl = document.getElementById('query-selector-all-list'),
-nodeList = watched(listEl).querySelectorAll('.watched-item');
+    nodeList = watched(listEl).querySelectorAll('.watched-item');
 
 var updateList = function () {
-countEl.textContent = nodeList.length; //update count
-nodeList.forEach(function (el, index) {...}); //update every item
+  countEl.textContent = nodeList.length; //update count
+  nodeList.forEach(function (el, index) {...}); //update every item
 };
 
 // Listen to the lists update events
 nodeList.on('added', function (addedElements) {
-updateList();
+  updateList();
 });
 nodeList.on('removed', function (addedElements) {
-updateList();
+  updateList();
 });
 </code></pre>
 
