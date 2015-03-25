@@ -5,10 +5,6 @@ no_nav: true
 <div class="lead">
 Live, event driven dom element collections
 </div>
-<p>
-GREMLIN.JS is a dependency-free library to build web components. Web components for boringly normal websites, all your
-websites. Webapps are not for everyone and everything, but modular and well organized code is.
-</p>
 
 
 ``` javascript
