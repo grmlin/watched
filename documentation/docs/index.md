@@ -34,7 +34,7 @@ watched('.foo').on('changed', function(currentElements){
 <br><br>
 ## Usage
 
-[Open demo](./demo.html)
+[Open demo](demo)
 
 ```js
 // give me nodelists
